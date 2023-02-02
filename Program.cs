@@ -6,8 +6,8 @@ IFreeSql SqlFactory(IServiceProvider r)
 {
     IFreeSql mysql = new FreeSql.FreeSqlBuilder()
         .UseConnectionString(FreeSql.DataType.Sqlite, @"Data Source=moments.db")
-        // .UseMonitorCommand(cmd => Console.WriteLine($"Sql：{cmd.CommandText}"))
-        // .UseAutoSyncStructure(true) 
+        .UseMonitorCommand(cmd => Console.WriteLine($"Sql：{cmd.CommandText}"))
+        .UseAutoSyncStructure(true) 
         .Build();
     return mysql;
 }
