@@ -1,0 +1,24 @@
+﻿@page "/friends"
+@using Moments.Model
+@inject IFreeSql Db
+<div class="m-1">
+    @foreach (var item in _friends)
+    {
+        <span>
+            <a target="_blank" href="@item.Link" class="btn btn-sm btn-success m-1">
+                @item.Name
+            </a>
+        </span>
+    }
+</div>
+
+@code {
+    List<Friend> _friends = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _friends = await Db.Select<Friend>()
+            .ToListAsync();
+    }
+
+}

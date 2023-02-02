@@ -1,0 +1,53 @@
+﻿@page "/Gather/{token}"
+@using Moments.Model
+@inject IFreeSql Db
+@inject IConfiguration Configuration
+<div>
+    @_info
+</div>
+
+@code {
+    string _info = "正在采集";
+    int _cnt;
+
+    [Parameter]
+    public string? Token { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Token != Configuration["Token"])
+        {
+            _info = "token无效";
+            return;
+        }
+        var friends = Db.Select<Friend>().ToList();
+        foreach (var item in friends)
+        {
+            var cnt = 0;
+            var res = Rss.GetRss(item.Rss, item.Software);
+            foreach (var article in res.Data)
+            {
+                try
+                {
+                    Db.Insert<Article>().AppendData(article).ExecuteAffrows();
+                    _cnt++;
+                    cnt++;
+                }
+                catch
+                {
+                    break;
+                }
+            }
+            Db.Insert<GatherLog>().AppendData(new GatherLog
+            {
+                Name = item.Name,
+                Url = item.Link,
+                Num = cnt,
+                DateTime = DateTime.Now,
+                Error = res.Message
+            }).ExecuteAffrows();
+        }
+        _info = "采集完成，共添加" + _cnt + "篇文章";
+    }
+
+}
