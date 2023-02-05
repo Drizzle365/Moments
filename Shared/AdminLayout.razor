@@ -1,0 +1,33 @@
+﻿@inject IConfiguration Configuration
+@inherits LayoutComponentBase
+<PageTitle>@Configuration["Title"]</PageTitle>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <ul class="nav mb-1">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="/Admin">仪表盘</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="/Admin/Friends">朋友们</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="/Admin/Rss">RSS</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="/Admin/Gather">采集</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="/Admin/Config">配置</a>
+                </li>
+            </ul>
+        </header>
+        <div class="container" style="margin-top: 20px">
+            @Body
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <Login></Login>
+    </NotAuthorized>
+</AuthorizeView>

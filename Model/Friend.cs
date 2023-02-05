@@ -2,11 +2,11 @@
 
 namespace Moments.Model;
 
-public enum Software
+public enum Rule
 {
-    WordPress,
-    Typecho,
-    其他
+    Rss,
+    Atom,
+    Other
 }
 
 public class Friend
@@ -21,5 +21,5 @@ public class Friend
     public string? Email { get; set; }
     public string? Link { get; set; }
     public string? Rss { get; set; }
-    public Software Software { get; set; } = Software.WordPress;
+    public Rule Rule { get; set; } = Rule.Rss;
 }

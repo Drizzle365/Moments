@@ -13,6 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Flurl" Version="3.0.7" />
+      <PackageReference Include="Flurl.Http" Version="4.0.0-pre3" />
       <PackageReference Include="FreeSql" Version="3.2.687" />
       <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.2.687" />
     </ItemGroup>

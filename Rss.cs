@@ -1,5 +1,6 @@
 ﻿using System.Xml;
 using Moments.Model;
+using Flurl.Http;
 
 namespace Moments;
 
@@ -11,7 +12,7 @@ public class RssResult
 
 public static class Rss
 {
-    public static RssResult GetRss(string? url, Software software)
+    public static async Task<RssResult> GetRss(string? url, Rule rule)
     {
         if (url is null)
         {
@@ -21,11 +22,11 @@ public static class Rss
         var xmlDoc = new XmlDocument();
         try
         {
-            xmlDoc.Load(url);
+            var rss = await url.GetStringAsync();
+            xmlDoc.LoadXml(rss);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             return new RssResult
             {
                 Message = e.ToString()
@@ -36,7 +37,7 @@ public static class Rss
             new XmlNamespaceManager(xmlDoc.NameTable);
         List<Article> ret = new List<Article>();
         var siteName = xmlDoc.GetElementsByTagName("title")[0]?.InnerText;
-        if (software is Software.WordPress or Software.Typecho)
+        if (rule is Rule.Rss)
         {
             xmlNamespaceManager.AddNamespace("content", "http://purl.org/rss/1.0/modules/content/");
             var items = xmlDoc.GetElementsByTagName("item");
@@ -54,7 +55,8 @@ public static class Rss
                     });
             }
         }
-        else
+
+        if (rule is Rule.Atom)
         {
             var titles = xmlDoc.GetElementsByTagName("title");
             var links = xmlDoc.GetElementsByTagName("link");

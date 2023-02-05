@@ -1,5 +1,8 @@
-﻿@using Moments.Model
+﻿@page "/Admin/Friends"
+@using Moments.Model
+@using Moments.Service
 @inject IFreeSql Db
+@inject Core Core
 <div class="m-1">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add">添加新朋友</button>
     <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="">订阅中心</button>
@@ -8,8 +11,8 @@
     <thead>
     <tr>
         <th scope="col">博客</th>
-        <th scope="col">RSS</th>
-        <th scope="col">操作</th>
+        <th scope="col">Rss</th>
+        <th scope="col" style="text-align: center">操作</th>
     </tr>
     </thead>
     <tbody>
@@ -19,8 +22,12 @@
             <td>
                 <a target="_blank" href="@item.Link">@item.Name</a>
             </td>
-            <td>@item.Rss</td>
             <td>
+                @item.Rss
+            </td>
+            <td style="text-align: center">
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#friend-info" @onclick="() => { _info = item; }">查看</button>
+                <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#friend-gather" @onclick="() => {  GatherItem(item); }">采集</button>
                 <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit" @onclick="() => { _edit = item; }">编辑</button>
                 <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#del" @onclick="() => { _del = item; }">删除</button>
             </td>
@@ -75,10 +82,10 @@
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="add_software" class="col-sm-2 col-xs-2 col-form-label">程序</label>
+                    <label for="add_software" class="col-sm-2 col-xs-2 col-form-label">规则</label>
                     <div class="col-sm-10">
-                        <select class="form-select" @bind="_add.Software" id="add_software">
-                            @foreach (var item in Enum.GetNames(typeof(Software)))
+                        <select class="form-select" @bind="_add.Rule" id="add_software">
+                            @foreach (var item in Enum.GetNames(typeof(Rule)))
                             {
                                 <option value="@item">@item</option>
                             }
@@ -140,10 +147,10 @@
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="software" class="col-sm-2 col-xs-2 col-form-label">程序</label>
+                    <label for="software" class="col-sm-2 col-xs-2 col-form-label">规则</label>
                     <div class="col-sm-10">
-                        <select class="form-select" @bind="_edit.Software" id="software">
-                            @foreach (var item in Enum.GetNames(typeof(Software)))
+                        <select class="form-select" @bind="_edit.Rule" id="software">
+                            @foreach (var item in Enum.GetNames(typeof(Rule)))
                             {
                                 <option value="@item">@item</option>
                             }
@@ -177,12 +184,54 @@
         </div>
     </div>
 </div>
+<!-- Info Modal -->
+<div class="modal fade" id="friend-info" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">查看：@_info.Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>名称 : @_info.Name</div>
+                <div>头像 : @_info.Avatar</div>
+                <div>邮箱 : @_info.Email</div>
+                <div>简介 : @_info.Info</div>
+                <div>链接 : @_info.Link</div>
+                <div>Rss : @_info.Rss</div>
+                <div>规则 : @_info.Rule</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Gather Modal -->
+<div class="modal fade" id="friend-gather" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">采集成功</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                采集成功~
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     List<Friend> _friends = new();
     Friend _edit = new();
     Friend _del = new();
     Friend _add = new();
+    Friend _info = new();
+    Friend _gather = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -211,6 +260,12 @@
             .Where(x => x.FriendId == _del.FriendId)
             .ExecuteAffrowsAsync();
         _friends.Remove(_del);
+    }
+
+    async void GatherItem(Friend item)
+    {
+        await Core.GatherRssItem(item);
+        StateHasChanged();
     }
 
 }

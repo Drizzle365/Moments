@@ -1,0 +1,55 @@
+﻿@page "/Admin/Config"
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+<div class="input-group mb-3">
+    <span class="input-group-text">网站标题</span>
+    <input type="text" class="form-control" value="@Configuration["Title"]" disabled="">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">采集间隔</span>
+    <input type="text" class="form-control" value="@Configuration["Interval"]" disabled="">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">用户密钥</span>
+    <input type="text" class="form-control" value="@Configuration["Token"]" disabled="">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">引用站地址</span>
+    <input type="text" class="form-control" value="@Configuration["FriendsOrigin"]" disabled="">
+</div>
+<div class="m-3" style="text-align: center">
+    请修改应用中的appsettings.json文件后重启应用配置生效
+</div>
+<div class="mb-3">
+    <label for="friend-iframe" class="form-label">友链嵌入代码：</label>
+    <br>HTML:
+    <textarea class="form-control" @bind="_friend" id="friend-iframe" rows="3"></textarea>
+    <br>JS:
+
+    <textarea  class="form-control" rows="7">
+const friendsFinish = function () {
+    window.addEventListener('message', function (event) {
+        var iframe = document.getElementById("friends-frame")
+        iframe.style.height = event.data + 100 + "px";
+    })
+}
+    </textarea>
+</div>
+<div class="mb-3">
+    <label for="rss-iframe" class="form-label">Rss嵌入代码：</label>
+    <textarea class="form-control" @bind="_rss" id="rss-iframe" rows="3"></textarea>
+</div>
+
+@code {
+    string? _friend;
+    string? _rss;
+
+    protected override void OnInitialized()
+    {
+        _rss = $"<iframe loading=\"lazy\" src=\"{NavigationManager.BaseUri}?cmd=list\" name=\"moments\" width=\"100%\" height=\"1100px\" style=\"border: none;\"></iframe>";
+        _friend = $"<iframe loading=\"lazy\" onload=\"friendsFinish()\" src=\"{NavigationManager.BaseUri}friends\" name=\"moments\" width=\"100%\" height=\"1100px\" style=\"border: none;\"></iframe>";
+
+        base.OnInitialized();
+    }
+
+}

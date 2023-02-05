@@ -3,31 +3,32 @@
 @inject IConfiguration Configuration
 @inject IFreeSql Db;
 
-<div class="container d-flex flex-column align-items-stretch flex-shrink-0 bg-white" style="width: 100%;">
+<div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white" style="width: 100%;">
     @if (_title)
     {
-        <div href="/" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+        <div href="/" class="mb-2 d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
             <svg t="1675169871440" class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" p-id="1485" width="32" height="32">
                 <path d="M679.170882 398.98197 679.170882 126.497019c0 0-133.338844-71.481008-288.989857-16.365736L679.170882 398.98197zM704.414823 559.284933 704.414823 137.748271c0 0 157.630087 71.433936 202.051809 244.963131L704.414823 559.284933zM619.614461 681.811524l290.99042-273.64845c0 0 51.487651 83.708494-25.293059 273.64845L619.614461 681.811524zM471.029378 716.50672l393.014048 0c0 0-47.444569 128.594797-217.255069 181.688016L471.029378 716.50672zM342.736457 629.695562l0 256.17959c0 0 102.071723 65.36573 276.878005 21.478174L342.736457 629.695562zM115.370099 642.946354 314.44511 464.326211l0 406.206512C314.44511 870.5317 194.172863 828.782853 115.370099 642.946354zM110.3252 614.376669c0 0-45.538149-146.935514 18.154475-274.554076l273.811156 0L110.3252 614.376669zM145.682475 311.183322c0 0 57.602929-130.594337 214.20971-191.869912l186.893574 191.869912L145.682475 311.183322z" fill="#5D5D5D" p-id="1486"></path>
-            </svg> 
+            </svg>
             <span class="fs-5 fw-semibold m-1">@Configuration["Title"]</span>
             <span style="margin-left: 8px" class="badge text-bg-secondary">朋友：@_countFriends </span>
             <span class="badge text-bg-success m-1">文章：@_countArticle </span>
         </div>
     }
-    <RssList></RssList>
+    <div class="container">
+        <RssList></RssList>
+    </div>
 </div>
 @if (_title)
 {
     <div style="text-align: center;margin: 5px;font-size: small">
-        Copyright © 2023 Drizzle. All Rights Reserved.
+        Copyright © 2023 <a target="_blank" href="https://dearain.cn">Drizzle</a>. All Rights Reserved.
     </div>
 }
 
 @code{
     long _countArticle;
     long _countFriends;
-
     bool _title = true;
 
     [Parameter]
@@ -36,7 +37,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine(Cmd);
         _countArticle = await Db.Select<Article>().CountAsync();
         _countFriends = await Db.Select<Friend>().CountAsync();
         if (Cmd == "list")

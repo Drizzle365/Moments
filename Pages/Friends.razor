@@ -1,24 +1,38 @@
 ﻿@page "/friends"
 @using Moments.Model
 @inject IFreeSql Db
-<div class="m-1">
-    @foreach (var item in _friends)
-    {
-        <span>
-            <a target="_blank" href="@item.Link" class="btn btn-sm btn-success m-1">
-                @item.Name
-            </a>
-        </span>
-    }
+@inject IJSRuntime Js
+@inject IConfiguration Configuration
+<div class="page-friends page-common">
+    <ul class="readers-list clearfix">
+        @foreach (var item in _friends)
+        {
+            <li class="wow slideInUp animated" style="animation-name: slideInUp;">
+                <a target="_blank" href="@item.Link">
+                    <div>@item.Name</div>
+                </a>
+            </li>
+        }
+    </ul>
 </div>
 
 @code {
-    List<Friend> _friends = new();
+    readonly List<Friend> _friends = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        _friends = await Db.Select<Friend>()
-            .ToListAsync();
+        var temp = Db.Select<Friend>()
+            .ToList();
+        var random = new Random();
+        foreach (var item in temp)
+        {
+            _friends.Insert(random.Next(_friends.Count), item);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Js.InvokeVoidAsync("friendsOnload", Configuration["FriendsOrigin"]);
     }
 
 }
