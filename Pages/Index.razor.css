@@ -1,0 +1,216 @@
+﻿html {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+@font-face {
+    font-family: HarmonyOS_Sans_SC_Medium;
+    font-style: normal;
+    font-display: swap;
+    src: url('/HarmonyOS_Sans_medium.woff2') format('woff2'),
+    url('/HarmonyOS_Sans_regular.woff2') format('woff');
+}
+
+* {
+    font-family: HarmonyOS_Sans_SC_Medium, system-ui;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.love_show {
+    display: block !important;
+    animation: fade 0.5s;
+}
+
+#main {
+    background-color: rgb(240, 240, 240);
+    min-height: 100vh;
+}
+
+.main-content {
+    max-width: 550px;
+    margin: 0 auto !important;
+    position: relative;
+    background-color: white;
+
+}
+
+.main-container {
+    margin-top: 60px;
+    padding: 20px;
+}
+
+.header-top {
+    position: fixed;
+    height: 40px;
+    width: 100%;
+    max-width: 550px;
+    background-color: rgba(0, 0, 0, 0.16);
+}
+
+.header .scrolled {
+    background-color: #727272 !important;
+    transition: background-color 200ms linear;
+}
+
+.header .header-left {
+    float: left;
+    margin-top: 8px;
+    color: white;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.header .header-right {
+    float: right;
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+.header .header-right i {
+    margin-right: 5px;
+}
+
+.icon {
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+#name {
+    color: white;
+    position: absolute;
+    left: -43px;
+    top: 12px;
+}
+
+.profile {
+    position: absolute;
+    right: 10px;
+    margin-right: 12px;
+    margin-top: -48px;
+}
+
+.profile img {
+    border-radius: 16px;
+    height: 64px;
+}
+
+.says {
+    margin-top: 22px;
+    float: right;
+    color: #b2b2b2;
+    font-size: 13px;
+    margin-right: 18px;
+}
+
+.upload-bg {
+    position: relative;
+    background-color: #ededed;
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.upload-icon {
+    color: #6c757d;
+    margin-top: 32px;
+    font-size: xx-large;
+}
+
+.upload {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.item {
+    padding-bottom: 6px;
+    margin-bottom: 30px;
+    border-bottom: #eaeaea solid 1px;
+}
+
+.item .left img {
+    height: 46px;
+    border-radius: 12px;
+}
+
+.left {
+    float: left;
+    cursor: pointer;
+
+}
+
+.right {
+    margin-left: 56px;
+}
+
+.right .name {
+    color: #576b95 !important;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.right .time {
+    color: #b2b2b2;
+    font-size: 14px;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+.right .more {
+    display: inline-block;
+    float: right;
+    border: white 0;
+    border-radius: 3px;
+    margin-top: 5px;
+    line-height: 21px;
+    color: #576b95;
+    padding: 3px;
+    background-color: #f7f7f7;
+
+}
+
+.right .more:active {
+    background-color: rgba(187, 175, 160, 0.33);
+}
+
+.right .more-button {
+    float: right;
+    display: none;
+}
+
+.right .comments {
+    margin-top: 8px;
+    background-color: rgb(247, 247, 247);
+    padding: 4px;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+.comments-item {
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comments-item:active {
+    background-color: #8c9298;
+}

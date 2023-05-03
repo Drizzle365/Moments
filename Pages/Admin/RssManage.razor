@@ -1,0 +1,112 @@
+﻿@page "/Admin/Rss"
+@using Moments.Model
+@inject IFreeSql Db
+@inject NavigationManager NavigationManager
+<div class="m-1">
+    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rss-info" @onclick="DelAll">清空数据</button>
+</div>
+
+<!-- Info Modal -->
+<div class="modal fade" id="rss-info" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">信息</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                清空成功，请手动刷新页面
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="list-group list-group-flush border-bottom scrollarea">
+        @foreach (var item in _nodeList)
+        {
+            <div style="cursor: pointer" @onclick="() => { _now = item; }" data-bs-toggle="modal" data-bs-target="#content" class="list-group-item list-group-item-action py-3 lh-sm">
+                <div class="d-flex w-100 align-items-center justify-content-between">
+                    <strong class="mb-1">@item.Title</strong>
+                    <small class="text-muted">
+                        @item.PubDate.ToString("MM月dd日 tt hh:mm")
+                    </small>
+                </div>
+                <div class="col-10 small mt-2">
+                    @item.FriendId
+                </div>
+            </div>
+        }
+    </div>
+    <div style="text-align: center;margin: 20px">
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
+            <button type="button" class="btn btn-outline-primary" @onclick="() => { PutPage(_p - 1); }">上页</button>
+            <button type="button" class="btn btn-outline-primary" @onclick="() => { PutPage(_p + 1); }">下页</button>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="content" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">@_now.Title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body markdown-body">
+                    @(new MarkupString(_now.Content ?? "暂无阅览，请查看全文"))
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <a target="_blank" href="@_now.Link" class="btn btn-primary">查看原文</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    List<Article> _nodeList = new();
+    Article _now = new();
+    int _p = 1;
+    long _count = 0;
+    int _maxP;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _count = await Db.Select<Article>().CountAsync();
+        _maxP = (int)Math.Ceiling(_count / 10.0);
+        _nodeList = await Db.Select<Article>().OrderBy("PubDate DESC")
+            .Limit(10)
+            .ToListAsync();
+        StateHasChanged();
+    }
+
+    async void PutPage(int p)
+    {
+        if (p < 1)
+        {
+            p = 1;
+        }
+        if (p > _maxP)
+        {
+            p = _maxP;
+        }
+        _p = p;
+        _nodeList = await Db.Select<Article>().OrderBy("PubDate DESC")
+            .Offset((p - 1) * 10)
+            .Limit(10)
+            .ToListAsync();
+        StateHasChanged();
+    }
+    async void DelAll()
+    {
+        await Db.Delete<Article>()
+            .Where("1=1")
+            .ExecuteAffrowsAsync();
+    }
+
+}

@@ -1,0 +1,132 @@
+﻿@page "/"
+@using Moments.Model
+@inject IConfiguration Configuration
+@inject IFreeSql Db;
+@inject IJSRuntime JsRuntime
+<div id="main">
+    <div class="main-content">
+        <div class="header">
+            <div class="header-top">
+                <span class="header-left">
+                    <span @onclick='() => { JsRuntime.InvokeVoidAsync("scrollToTop"); }'>@Configuration["Title"]</span>
+                </span>
+                <span class="header-right" data-bs-toggle="modal" data-bs-target="#infoModal">
+                    <div style="color: white;margin-right: 10px">
+                        <span class="m-1">
+                            <i class="fa-solid fa-user-group"></i>朋友：@_friends.Count
+                        </span>
+                        <span class="m-1">
+                            <i class="fa-solid fa-palette"></i>
+                            文章：@_countArticle
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <img class="img-fluid" src="/header.jpg" alt="">
+            <div class="profile">
+                <div id="name">@Configuration["Name"]</div>
+                <img src="@Configuration["Avatar"]" alt="头像">
+            </div>
+            <div class="says">@Configuration["Sentence"]</div>
+        </div>
+        <div id="pjax-content">
+            <div class="main-container">
+                @foreach (var item in _nodeList)
+                {
+                    <div class="item">
+                        <div class="left">
+                            <img src="@GetAvatar(item.FriendId)" alt="头像">
+                        </div>
+                        <div class="right">
+                            <div class="name">
+                                <a style="color: #576b95" href="@GetBlogLink(item.FriendId)" target="_blank">@GetName(item.FriendId)</a>
+                            </div>
+                            <div class="content"> @(new MarkupString(item.Description ?? "暂无阅览，请查看全文"))</div>
+                            <div>
+                                <div class="time">@item.PubDate.ToString("MM月dd日 tt hh:mm")</div>
+                                <a href="@item.Link" target="_blank" class="more">查看原文</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div style="text-align: center;padding: 10px">
+            <button type="button" class="btn btn-outline-primary" @onclick="GetMore">
+                <i class="fa-solid fa-infinity"></i> 加载更多
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">快捷面板</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-primary" role="alert">
+                    <i class="fa-solid fa-house"></i>
+                    您一共有<a>@_friends.Count</a>位博主朋友，订阅了<a>@_countArticle</a>篇文章
+                </div>
+            </div>
+            <div class="modal-footer" style="position:relative;">
+                <div style="position: absolute;left: 15px;">
+                    Powered by
+                    <i class="fa-brands fa-github"></i>
+                    <a target="_blank" style="color: #000000" href="https://github.com/Drizzle365/Moments">Moments</a>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <a href="/admin" target="_blank" type="button" class="btn btn-primary">进入后台</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    long _countArticle;
+
+    List<Article> _nodeList = new();
+    List<Friend> _friends = new();
+    int _p = 1;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _countArticle = await Db.Select<Article>().CountAsync();
+        _nodeList = await Db.Select<Article>().OrderBy("PubDate DESC")
+            .Limit(10)
+            .ToListAsync();
+        _friends = await Db.Select<Friend>().ToListAsync();
+        StateHasChanged();
+    }
+
+    string GetName(int? id)
+    {
+        return _friends.Find(x => x.FriendId == id)?.Name ?? "未命名";
+    }
+
+    string GetAvatar(int? id)
+    {
+        return _friends.Find(x => x.FriendId == id)?.Avatar ?? "https://gravatar.loli.net/avatar/c243c9fe3d177bc3f656ff4554e4cbb0?s=100&d=mm&r=g";
+    }
+
+    string GetBlogLink(int? id)
+    {
+        return _friends.Find(x => x.FriendId == id)?.Link ?? "https://dearain.cn";
+    }
+
+    async void GetMore()
+    {
+        var more = await Db.Select<Article>().OrderBy("PubDate DESC")
+            .Offset(_p * 10)
+            .Limit(10)
+            .ToListAsync();
+        _nodeList.AddRange(more);
+        _p++;
+        StateHasChanged();
+    }
+
+}

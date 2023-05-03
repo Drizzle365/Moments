@@ -1,0 +1,31 @@
+﻿@using Moments.Service
+@using Moments.Model
+@inject IConfiguration Configuration
+@inject CustomAuthenticationStateProvider CustomAuthenticationStateProvider 
+@inject IJSRuntime Js
+<div class="m-3">
+    <input placeholder="请输入密钥" type="password" class="form-control mb-2" @bind="_passWord">
+    <button class="btn btn-success" @onclick="Submit">登录</button>
+</div>
+
+@code {
+    string? _passWord;
+
+    async void Submit()
+    {
+        if (Configuration["Token"] == _passWord)
+        {
+            var token = new UserSession
+            {
+                Token = _passWord,
+                Role = "Admin"
+            };
+            CustomAuthenticationStateProvider.Login(token);
+        }
+        else
+        {
+            await Js.InvokeVoidAsync("alert", "密钥错误");
+        }
+    }
+
+}

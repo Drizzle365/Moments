@@ -1,0 +1,270 @@
+﻿@page "/Admin/Friends"
+@using Moments.Model
+@using Moments.Service
+@inject IFreeSql Db
+@inject Core Core
+<div class="m-1">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add">添加新朋友</button>
+    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="">订阅中心</button>
+</div>
+<table class="table" style="margin-top: 10px">
+    <thead>
+    <tr>
+        <th scope="col">博客</th>
+        <th scope="col">Rss</th>
+        <th scope="col" style="text-align: center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in _friends)
+    {
+        <tr>
+            <td>
+                <a target="_blank" href="@item.Link">@item.Name</a>
+            </td>
+            <td>
+                @item.Rss
+            </td>
+            <td style="text-align: center">
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#friend-info" @onclick="() => { _info = item; }">查看</button>
+                <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#friend-gather" @onclick="() => {  GatherItem(item); }">采集</button>
+                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit" @onclick="() => { _edit = item; }">编辑</button>
+                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#del" @onclick="() => { _del = item; }">删除</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<!-- Add Modal -->
+<div class="modal fade" id="add" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">添加</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 row">
+                    <label for="add_name" class="col-sm-2 col-xs-2 col-form-label">名称</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_name" @bind="_add.Name">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="add_avatar" class="col-sm-2 col-xs-2 col-form-label">头像</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_avatar" @bind="_add.Avatar">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="add_info" class="col-sm-2 col-xs-2 col-form-label">简介</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_info" @bind="_add.Info">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="add_email" class="col-sm-2 col-xs-2 col-form-label">邮箱</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_email" @bind="_add.Email">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="add_link" class="col-sm-2 col-xs-2 col-form-label">链接</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_link" @bind="_add.Link">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="add_rss" class="col-sm-2 col-xs-2 col-form-label">Rss</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_rss" @bind="_add.Rss">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="add_software" class="col-sm-2 col-xs-2 col-form-label">规则</label>
+                    <div class="col-sm-10">
+                        <select class="form-select" @bind="_add.Rule" id="add_software">
+                            @foreach (var item in Enum.GetNames(typeof(Rule)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="Add">添加</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="edit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">编辑：@_edit.Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-xs-2 col-form-label">名称</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" @bind="_edit.Name">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="avatar" class="col-sm-2 col-xs-2 col-form-label">头像</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="avatar" @bind="_edit.Avatar">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="info" class="col-sm-2 col-xs-2 col-form-label">简介</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="info" @bind="_edit.Info">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="email" class="col-sm-2 col-xs-2 col-form-label">邮箱</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="email" @bind="_edit.Email">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="link" class="col-sm-2 col-xs-2 col-form-label">链接</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="link" @bind="_edit.Link">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="rss" class="col-sm-2 col-xs-2 col-form-label">Rss</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="rss" @bind="_edit.Rss">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="software" class="col-sm-2 col-xs-2 col-form-label">规则</label>
+                    <div class="col-sm-10">
+                        <select class="form-select" @bind="_edit.Rule" id="software">
+                            @foreach (var item in Enum.GetNames(typeof(Rule)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="Edit">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Del Modal -->
+<div class="modal fade" id="del" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">删除：</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                确定要删除嘛！
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">不确定</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="Del">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Info Modal -->
+<div class="modal fade" id="friend-info" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">查看：@_info.Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>名称 : @_info.Name</div>
+                <div>头像 : @_info.Avatar</div>
+                <div>邮箱 : @_info.Email</div>
+                <div>简介 : @_info.Info</div>
+                <div>链接 : @_info.Link</div>
+                <div>Rss : @_info.Rss</div>
+                <div>规则 : @_info.Rule</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Gather Modal -->
+<div class="modal fade" id="friend-gather" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">采集成功</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                采集成功~
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<Friend> _friends = new();
+    Friend _edit = new();
+    Friend _del = new();
+    Friend _add = new();
+    Friend _info = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _friends = await Db.Select<Friend>().ToListAsync();
+    }
+
+    async void Add()
+    {
+        await Db.Insert<Friend>()
+            .AppendData(_add)
+            .ExecuteAffrowsAsync();
+        _friends.Add(_add);
+        _add = new Friend();
+    }
+
+    async void Edit()
+    {
+        await Db.Update<Friend>()
+            .SetSource(_edit)
+            .ExecuteAffrowsAsync();
+    }
+
+    async void Del()
+    {
+        await Db.Delete<Friend>()
+            .Where(x => x.FriendId == _del.FriendId)
+            .ExecuteAffrowsAsync();
+        _friends.Remove(_del);
+    }
+
+    async void GatherItem(Friend item)
+    {
+        await Core.GatherRssItem(item);
+        StateHasChanged();
+    }
+
+}

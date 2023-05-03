@@ -1,0 +1,37 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Web
+@namespace Moments.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <base href="~/"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link href="css/site.css" rel="stylesheet"/>
+    <link href="css/markdown.css" rel="stylesheet"/>
+    <link href="Moments.styles.css" rel="stylesheet"/>
+    <link rel="icon" type="image/png" href="favicon.ico"/>
+    <script src="https://kit.fontawesome.com/01cf88eb0a.js" crossorigin="anonymous"></script>
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered"/>
+</head>
+<body>
+<component type="typeof(App)" render-mode="ServerPrerendered"/>
+
+<div id="blazor-error-ui">
+    <environment include="Staging,Production">
+        发生错误。在重新加载之前，此应用程序可能不再响应。
+    </environment>
+    <environment include="Development">
+        发生了未处理的异常。有关详细信息，请参阅浏览器开发工具。
+    </environment>
+    <a href="" class="reload">刷新</a>
+    <a class="dismiss">🗙</a>
+</div>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/site.js"></script>
+<script src="_framework/blazor.server.js"></script>
+</body>
+</html>
