@@ -15,9 +15,9 @@
 
 ### 1.原生部署
 
-下载构建好的二进制文件直接运行即可，建议使用`supervisord`进行进程守护
+下载源代码编译后运行即可，建议使用`supervisord`进行进程守护
 
-### 2.Docker部署
+### 2.Docker部署（⭐推荐）
 
 ```
 docker run -d \
@@ -27,7 +27,11 @@ docker run -d \
 drizzle2001/moments
 ```
 
-一键运行即可
+运行后访问 `http://IP:3000` 即可  
+建议使用反向代理绑定域名访问
+
+图文教程: https://dearain.cn/archives/2069/
+
 
 ## 其他相关
 
