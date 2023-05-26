@@ -2,16 +2,18 @@
 @using Moments.Model
 @using Moments.Service
 @inject IFreeSql Db
-@inject Core Core
+@inject FriendService FriendService
+@inject GatherService GatherService
 <div class="m-1">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add">添加新朋友</button>
+    <button class="btn btn-danger" @onclick="Check">验证状态</button>
     <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="">订阅中心</button>
 </div>
 <table class="table" style="margin-top: 10px">
     <thead>
     <tr>
         <th scope="col">博客</th>
-        <th scope="col">Rss</th>
+        <th scope="col">友链状态</th>
         <th scope="col" style="text-align: center">操作</th>
     </tr>
     </thead>
@@ -23,11 +25,27 @@
                 <a target="_blank" href="@item.Link">@item.Name</a>
             </td>
             <td>
-                @item.Rss
+                @switch (item.Verify)
+                {
+                    case FriendState.正常:
+                        <span class="badge text-bg-success">@item.Verify</span>
+                        break;
+                    case FriendState.未知:
+                        <span class="badge text-bg-secondary">@item.Verify</span>
+                        break;
+                    case FriendState.无法访问:
+                        <span class="badge text-bg-dark">@item.Verify</span>
+                        break;
+                    case FriendState.失链:
+                        <span class="badge text-bg-danger">@item.Verify</span>
+                        break;
+                    default:
+                        break;
+                }
             </td>
             <td style="text-align: center">
                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#friend-info" @onclick="() => { _info = item; }">查看</button>
-                <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#friend-gather" @onclick="() => {  GatherItem(item); }">采集</button>
+                <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#friend-gather" @onclick="() => { GatherItem(item); }">采集</button>
                 <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit" @onclick="() => { _edit = item; }">编辑</button>
                 <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#del" @onclick="() => { _del = item; }">删除</button>
             </td>
@@ -90,6 +108,12 @@
                                 <option value="@item">@item</option>
                             }
                         </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="add_VerifyUrl" class="col-sm-2 col-xs-2 col-form-label">验证</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_VerifyUrl" @bind="_add.VerifyUrl">
                     </div>
                 </div>
             </div>
@@ -155,6 +179,12 @@
                                 <option value="@item">@item</option>
                             }
                         </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="VerifyUrl" class="col-sm-2 col-xs-2 col-form-label">验证</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="VerifyUrl" @bind="_edit.VerifyUrl">
                     </div>
                 </div>
             </div>
@@ -263,8 +293,16 @@
 
     async void GatherItem(Friend item)
     {
-        await Core.GatherRssItem(item);
+        await GatherService.GatherRssItem(item);
         StateHasChanged();
+    }
+
+    void Check()
+    {
+        foreach (var item in _friends)
+        {
+            FriendService.VerifyItem(item);
+        }
     }
 
 }

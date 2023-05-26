@@ -1,14 +1,15 @@
 ﻿@page "/"
 @using Moments.Model
-@inject IConfiguration Configuration
+@using Moments.Service
 @inject IFreeSql Db;
 @inject IJSRuntime JsRuntime
+@inject ConfigService ConfigService
 <div id="main">
     <div class="main-content">
         <div class="header">
             <div class="header-top">
                 <span class="header-left">
-                    <span @onclick='() => { JsRuntime.InvokeVoidAsync("scrollToTop"); }'>@Configuration["Title"]</span>
+                    <span @onclick='() => { JsRuntime.InvokeVoidAsync("scrollToTop"); }'>@ConfigService.Get("Title")</span>
                 </span>
                 <span class="header-right" data-bs-toggle="modal" data-bs-target="#infoModal">
                     <div style="color: white;margin-right: 10px">
@@ -24,10 +25,10 @@
             </div>
             <img class="img-fluid" src="/header.jpg" alt="">
             <div class="profile">
-                <div id="name">@Configuration["Name"]</div>
-                <img src="@Configuration["Avatar"]" alt="头像">
+                <div id="name">@ConfigService.Get("Name")</div>
+                <img src="@ConfigService.Get("Avatar")" alt="头像">
             </div>
-            <div class="says">@Configuration["Sentence"]</div>
+            <div class="says">@ConfigService.Get("Sentence")</div>
         </div>
         <div id="pjax-content">
             <div class="main-container">
@@ -74,7 +75,6 @@
             </div>
             <div class="modal-footer" style="position:relative;">
                 <div style="position: absolute;left: 15px;">
-                    Powered by
                     <i class="fa-brands fa-github"></i>
                     <a target="_blank" style="color: #000000" href="https://github.com/Drizzle365/Moments">Moments</a>
                 </div>
@@ -91,7 +91,6 @@
     List<Article> _nodeList = new();
     List<Friend> _friends = new();
     int _p = 1;
-
 
     protected override async Task OnInitializedAsync()
     {

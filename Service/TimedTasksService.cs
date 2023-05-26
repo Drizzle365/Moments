@@ -2,13 +2,13 @@
 
 namespace Moments.Service;
 
-public class TimedTasks : Core
+public class TimedTasksService
 {
-    private IFreeSql _db;
+    private readonly GatherService _gatherService;
 
-    public TimedTasks(IFreeSql db) : base(db)
+    public TimedTasksService(GatherService gatherService)
     {
-        _db = db;
+        _gatherService = gatherService;
     }
 
     public void Start(double interval)
@@ -23,6 +23,6 @@ public class TimedTasks : Core
     private void Gather(object source, ElapsedEventArgs e)
     {
         Console.WriteLine(DateTime.Now + " : 开始采集任务");
-        GatherRssAll();
+        _gatherService.GatherRssAll();
     }
 }

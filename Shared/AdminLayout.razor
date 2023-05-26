@@ -1,7 +1,7 @@
-﻿@inject IConfiguration Configuration
+﻿@using Moments.Service
 @inherits LayoutComponentBase
-<PageTitle>@Configuration["Title"]</PageTitle>
-
+@inject ConfigService ConfigService
+<PageTitle>@ConfigService.Get("Title")</PageTitle>
 <AuthorizeView Roles="Admin">
     <Authorized>
         <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
@@ -27,6 +27,9 @@
             @Body
         </div>
     </Authorized>
+    <Authorizing>
+        正在获取登录态
+    </Authorizing>
     <NotAuthorized>
         <Login></Login>
     </NotAuthorized>

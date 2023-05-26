@@ -1,6 +1,6 @@
 ﻿@using Moments.Service
 @using Moments.Model
-@inject IConfiguration Configuration
+@inject ConfigService ConfigService
 @inject CustomAuthenticationStateProvider CustomAuthenticationStateProvider 
 @inject IJSRuntime Js
 <div class="m-3">
@@ -13,7 +13,7 @@
 
     async void Submit()
     {
-        if (Configuration["Token"] == _passWord)
+        if (ConfigService.Get("Token") == _passWord)
         {
             var token = new UserSession
             {

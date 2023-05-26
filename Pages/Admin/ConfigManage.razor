@@ -1,0 +1,79 @@
+﻿@page "/Admin/Config"
+@using Moments.Service
+@inject ConfigService ConfigService
+<div class="input-group mb-3">
+    <span class="input-group-text">网站标题</span>
+    <input type="text" class="form-control" @bind="_title">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">采集间隔</span>
+    <input type="text" class="form-control" @bind="_interval">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">用户密钥</span>
+    <input type="text" class="form-control" @bind="_token">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">姓名</span>
+    <input type="text" class="form-control" @bind="_name">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">头像</span>
+    <input type="text" class="form-control" @bind="_avatar">
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text">一言</span>
+    <input type="text" class="form-control" @bind="_sentence">
+</div>
+<div class="m-3" style="text-align: center">
+    <button class="btn btn-success" @onclick="Save" data-bs-toggle="modal" data-bs-target="#config-info">保存</button>
+</div>
+
+<!-- Info Modal -->
+<div class="modal fade" id="config-info" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">信息</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                保存成功
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    string? _title;
+    string? _interval;
+    string? _token;
+    string? _name;
+    string? _avatar;
+    string? _sentence;
+
+    protected override void OnInitialized()
+    {
+        _title = ConfigService.Get("Title");
+        _interval = ConfigService.Get("Interval");
+        _token = ConfigService.Get("Token");
+        _name = ConfigService.Get("Name");
+        _avatar = ConfigService.Get("Avatar");
+        _sentence = ConfigService.Get("Sentence");
+    }
+
+    void Save()
+    {
+        ConfigService.Set("Title", _title);
+        ConfigService.Set("Interval", _interval);
+        ConfigService.Set("Token", _token);
+        ConfigService.Set("Name", _name);
+        ConfigService.Set("Avatar", _avatar);
+        ConfigService.Set("Sentence", _sentence);
+    }
+
+
+}

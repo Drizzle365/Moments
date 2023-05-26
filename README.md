@@ -8,8 +8,10 @@
 ## 功能概述
 
 * Feed订阅（支持包括RSS，Atom）
-* 支持友链API，方便博客对接
+* 支持友链,文章 API，方便博客对接
 * 简洁的界面风格，仿照微信朋友圈更美观易用
+* 支持友链自助申请
+* 支持友链检测自动验证
 
 ## 快速开始
 
@@ -32,7 +34,6 @@ drizzle2001/moments
 
 图文教程: https://dearain.cn/archives/2069/
 
-
 ## 其他相关
 
 ### 如何绑定域名
@@ -41,19 +42,8 @@ drizzle2001/moments
 
 ### 如何配置
 
-所有配置项目均在根目录下的 appsettings.json 文件中
-
-```json
-{
-  "Title": "Moments",
-  "Origin": "https://dearain.cn/",
-  "Interval": 3600000,
-  "Token": "lantin",
-  "Name": "时雨",
-  "Avatar": "https://q1.qlogo.cn/g?b=qq&nk=396823203&s=100",
-  "Sentence": "天行健，君子以自强不息。"
-}
-```
+1.0版本之后可以直接在后台进行相关配置  
+后台地址：` http://IP:3000/admin`
 
 ## 一些图片
 

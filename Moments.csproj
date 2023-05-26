@@ -19,4 +19,9 @@
       <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.2.687" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include=".github\workflows\docker.yml" />
+      <Content Include=".github\workflows\dotnet.yml" />
+    </ItemGroup>
+
 </Project>

@@ -1,7 +1,7 @@
-﻿@inherits LayoutComponentBase
-@inject IConfiguration Configuration
-<PageTitle>@Configuration["Title"]</PageTitle>
-
+﻿@using Moments.Service
+@inherits LayoutComponentBase
+@inject ConfigService ConfigService
+<PageTitle>@ConfigService.Get("Title")</PageTitle>
 <div class="main">
     @Body
 </div>

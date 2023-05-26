@@ -1,17 +1,26 @@
 ﻿using Moments.Model;
 
+#pragma warning disable CS4014
+
 namespace Moments.Service;
 
-public class Core
+/// <summary>
+/// 采集服务
+/// </summary>
+public class GatherService
 {
     private readonly IFreeSql _db;
 
-    public Core(IFreeSql db)
+    public GatherService(IFreeSql db)
     {
         _db = db;
     }
 
-
+    /// <summary>
+    /// 单个朋友站点采集
+    /// </summary>
+    /// <param name="target">目标朋友</param>
+    /// <returns>采集日志</returns>
     public async Task<GatherLog?> GatherRssItem(Friend target)
     {
         var cnt = 0;
@@ -46,14 +55,15 @@ public class Core
         return temp;
     }
 
-    protected void GatherRssAll()
+    /// <summary>
+    /// 全部站点采集
+    /// </summary>
+    public void GatherRssAll()
     {
-        var friends = _db.Select<Friend>().ToList();
+        var friends = _db.Select<Friend>().Where(x => x.Visible == true).ToList();
         foreach (var item in friends)
         {
-#pragma warning disable CS4014
             GatherRssItem(item);
-#pragma warning restore CS4014
         }
     }
 }

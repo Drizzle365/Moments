@@ -2,10 +2,9 @@
 @using Moments.Model
 @using Moments.Service
 @inject IFreeSql Db
-@inject Core Core
-@inject IConfiguration Configuration
+@inject GatherService GatherService
 <div class="m-1">
-    <button @onclick="StartGather" data-bs-toggle="modal" data-bs-target="#gather-res" target="_blank" href="/gather/@Configuration["Token"]" class="btn btn-secondary">发起采集</button>
+    <button @onclick="StartGather" data-bs-toggle="modal" data-bs-target="#gather-res" class="btn btn-secondary">发起采集</button>
     <button class="btn btn-danger" @onclick="DelAll">清空日志</button>
     <div class="btn-group" role="group" style="margin-left: 10px">
         <button type="button" class="btn btn-outline-primary" @onclick='() => { GatherLogWhere("1=1"); }'>全部</button>
@@ -144,7 +143,7 @@
 
     async void GatherRss(Friend target)
     {
-        var item = await Core.GatherRssItem(target);
+        var item = await GatherService.GatherRssItem(target);
         if (item is not null)
         {
             _gatherLogs.Add(item);
