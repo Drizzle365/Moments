@@ -120,7 +120,7 @@
         return _friends.Find(x => x.FriendId == id)?.Link ?? "https://dearain.cn";
     }
 
-    async void GetMore()
+    async Task GetMore()
     {
         var more = await Db.Select<Article>().OrderBy("PubDate DESC")
             .Offset(_p * 10)

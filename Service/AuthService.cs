@@ -47,7 +47,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     /// 登录
     /// </summary>
     /// <param name="userSession"></param>
-    public async void Login(UserSession userSession)
+    public async Task Login(UserSession userSession)
     {
         await _storage.SetAsync("identity", userSession);
         var identity = CreateIdentityFromUser(userSession);
@@ -58,7 +58,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     /// <summary>
     /// 登出
     /// </summary>
-    public async void LogOut()
+    public async Task LogOut()
     {
         await _storage.SetAsync("identity", new UserSession { Role = "" });
         var identity = CreateIdentityFromUser(null);

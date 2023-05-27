@@ -104,7 +104,7 @@
         _friendCount = await Db.Select<Friend>().CountAsync();
     }
 
-    async void GatherLogWhere(string where)
+    async Task GatherLogWhere(string where)
     {
         _gatherLogs = await Db.Select<GatherLog>()
             .Where(where)
@@ -115,7 +115,7 @@
     }
 
 
-    async void Del()
+    async Task Del()
     {
         await Db.Delete<GatherLog>()
             .Where(x => x.GatherId == _del.GatherId)
@@ -123,7 +123,7 @@
         _gatherLogs.Remove(_del);
     }
 
-    async void DelAll()
+    async Task DelAll()
     {
         await Db.Delete<GatherLog>()
             .Where("1=1")

@@ -85,7 +85,7 @@
         StateHasChanged();
     }
 
-    async void PutPage(int p)
+    async Task PutPage(int p)
     {
         if (p < 1)
         {
@@ -102,7 +102,7 @@
             .ToListAsync();
         StateHasChanged();
     }
-    async void DelAll()
+    async Task DelAll()
     {
         await Db.Delete<Article>()
             .Where("1=1")

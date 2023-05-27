@@ -267,7 +267,7 @@
         _friends = await Db.Select<Friend>().ToListAsync();
     }
 
-    async void Add()
+    async Task Add()
     {
         await Db.Insert<Friend>()
             .AppendData(_add)
@@ -276,14 +276,14 @@
         _add = new Friend();
     }
 
-    async void Edit()
+    async Task Edit()
     {
         await Db.Update<Friend>()
             .SetSource(_edit)
             .ExecuteAffrowsAsync();
     }
 
-    async void Del()
+    async Task Del()
     {
         await Db.Delete<Friend>()
             .Where(x => x.FriendId == _del.FriendId)
@@ -291,7 +291,7 @@
         _friends.Remove(_del);
     }
 
-    async void GatherItem(Friend item)
+    async Task GatherItem(Friend item)
     {
         await GatherService.GatherRssItem(item);
         StateHasChanged();
