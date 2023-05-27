@@ -11,7 +11,7 @@
 @code {
     string? _passWord;
 
-    async void Submit()
+    async Task Submit()
     {
         if (ConfigService.Get("Token") == _passWord)
         {

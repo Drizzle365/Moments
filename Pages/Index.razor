@@ -42,7 +42,10 @@
                             <div class="name">
                                 <a style="color: #576b95" href="@GetBlogLink(item.FriendId)" target="_blank">@GetName(item.FriendId)</a>
                             </div>
-                            <div class="content"> @(new MarkupString(item.Description ?? "暂无阅览，请查看全文"))</div>
+                            <div class="content">
+                                <b>@item.Title</b>
+                                @(new MarkupString(item.Description ?? "暂无阅览，请查看原文"))
+                            </div>
                             <div>
                                 <div class="time">@item.PubDate.ToString("MM月dd日 tt hh:mm")</div>
                                 <a href="@item.Link" target="_blank" class="more">查看原文</a>
