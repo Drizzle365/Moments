@@ -33,7 +33,6 @@ public class StartService
         _logger.LogInformation("开始迁移数据库");
         _db.CodeFirst.SyncStructure(typeof(Friend));
         _db.CodeFirst.SyncStructure(typeof(Article));
-        _db.CodeFirst.SyncStructure(typeof(GatherLog));
         _db.CodeFirst.SyncStructure(typeof(Config));
         _logger.LogInformation("开始初始化配置数据");
         _db.Insert<Config>()

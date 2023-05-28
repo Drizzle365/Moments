@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moments.Model;
+using Moments.Service;
 
 namespace Moments.Controllers;
 
@@ -8,12 +9,18 @@ namespace Moments.Controllers;
 public class ApiController : ControllerBase
 {
     private readonly IFreeSql _db;
+    private readonly FriendService _friendService;
 
-    public ApiController(IFreeSql db)
+    public ApiController(IFreeSql db, FriendService friendService)
     {
         _db = db;
+        _friendService = friendService;
     }
 
+    /// <summary>
+    /// 获取朋友信息
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("friends")]
     public async Task<ActionResult<List<Friend>>> Friends()
     {
@@ -29,10 +36,25 @@ public class ApiController : ControllerBase
         return friends;
     }
 
+    /// <summary>
+    /// 获取文章信息
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("articles")]
     public async Task<ActionResult<List<Article>>> Articles()
     {
         return await _db.Select<Article>()
             .ToListAsync();
+    }
+
+    /// <summary>
+    /// 申请友链
+    /// </summary>
+    /// <param name="self"></param>
+    /// <returns></returns>
+    public ActionResult<bool> Apply(Friend self)
+    {
+        _friendService.Add(self);
+        return true;
     }
 }

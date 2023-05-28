@@ -5,47 +5,10 @@
 @inject GatherService GatherService
 <div class="m-1">
     <button @onclick="StartGather" data-bs-toggle="modal" data-bs-target="#gather-res" class="btn btn-secondary">发起采集</button>
-    <button class="btn btn-danger" @onclick="DelAll">清空日志</button>
     <div class="btn-group" role="group" style="margin-left: 10px">
-        <button type="button" class="btn btn-outline-primary" @onclick='() => { GatherLogWhere("1=1"); }'>全部</button>
-        <button type="button" class="btn btn-outline-primary" @onclick='() => { GatherLogWhere("error is not null"); }'>错误</button>
-        <button type="button" class="btn btn-outline-primary" @onclick='() => { GatherLogWhere("error is null"); }'>成功</button>
     </div>
 </div>
-<table class="table" style="margin-top: 10px">
-    <thead>
-    <tr>
-        <th scope="col">博客</th>
-        <th scope="col">数量</th>
-        <th scope="col">时间</th>
-        <th scope="col">操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in _gatherLogs)
-    {
-        <tr>
-            @if (item.Error is null)
-            {
-                <td>
-                    <span data-bs-toggle="modal" data-bs-target="#gather-info" @onclick="() => { _item = item; }">@item.Name</span>
-                </td>
-            }
-            else
-            {
-                <td style="color: red;cursor:pointer;">
-                    <span data-bs-toggle="modal" data-bs-target="#gather-info" @onclick="() => { _item = item; }">@item.Name</span>
-                </td>
-            }
-            <td>@item.Num</td>
-            <td>@item.DateTime</td>
-            <td>
-                <button class="btn btn-sm btn-danger" @onclick="() => { _del = item;Del(); }">删除</button>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+
 <!-- Gather Modal -->
 <div class="modal fade" id="gather-res" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -68,88 +31,27 @@
         </div>
     </div>
 </div>
-<!-- Info Modal -->
-<div class="modal fade" id="gather-info" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">信息</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                @_item.Url<br> <br>
-                @_item.Error
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 @code {
-    List<GatherLog> _gatherLogs = new();
-    GatherLog _item = new();
-    GatherLog _del = new();
+
     long _friendCount;
     long _cnt;
 
     protected override async Task OnInitializedAsync()
     {
-        _gatherLogs = await Db.Select<GatherLog>()
-            .OrderBy("GatherId DESC")
-            .Limit(10)
-            .ToListAsync();
         _friendCount = await Db.Select<Friend>().CountAsync();
     }
 
-    async Task GatherLogWhere(string where)
-    {
-        _gatherLogs = await Db.Select<GatherLog>()
-            .Where(where)
-            .OrderBy("GatherId DESC")
-            .Limit(10)
-            .ToListAsync();
-        StateHasChanged();
-    }
-
-
-    async Task Del()
-    {
-        await Db.Delete<GatherLog>()
-            .Where(x => x.GatherId == _del.GatherId)
-            .ExecuteAffrowsAsync();
-        _gatherLogs.Remove(_del);
-    }
-
-    async Task DelAll()
-    {
-        await Db.Delete<GatherLog>()
-            .Where("1=1")
-            .ExecuteAffrowsAsync();
-        _gatherLogs.Clear();
-    }
-
-    void StartGather()
+    async Task StartGather()
     {
         _cnt = 0;
-        var friends = Db.Select<Friend>().ToList();
+        var friends = await Db.Select<Friend>().ToListAsync();
         foreach (var item in friends)
         {
-            GatherRss(item);
+            GatherService.GatherRssItem(item);
+            _cnt++;
         }
-    }
-
-    async void GatherRss(Friend target)
-    {
-        var item = await GatherService.GatherRssItem(target);
-        if (item is not null)
-        {
-            _gatherLogs.Add(item);
-        }
-        _cnt++;
-        StateHasChanged();
     }
 
 }

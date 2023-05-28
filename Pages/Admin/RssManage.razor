@@ -1,7 +1,6 @@
 ﻿@page "/Admin/Rss"
 @using Moments.Model
 @inject IFreeSql Db
-@inject NavigationManager NavigationManager
 <div class="m-1">
     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rss-info" @onclick="DelAll">清空数据</button>
 </div>
@@ -42,8 +41,8 @@
     </div>
     <div style="text-align: center;margin: 20px">
         <div class="btn-group" role="group" aria-label="Basic outlined example">
-            <button type="button" class="btn btn-outline-primary" @onclick="() => { PutPage(_p - 1); }">上页</button>
-            <button type="button" class="btn btn-outline-primary" @onclick="() => { PutPage(_p + 1); }">下页</button>
+            <button type="button" class="btn btn-outline-primary" @onclick="async () => { await PutPage(_p - 1); }">上页</button>
+            <button type="button" class="btn btn-outline-primary" @onclick="async () => { await PutPage(_p + 1); }">下页</button>
         </div>
     </div>
     <!-- Modal -->
@@ -67,12 +66,11 @@
 </div>
 
 
-
 @code {
     List<Article> _nodeList = new();
     Article _now = new();
     int _p = 1;
-    long _count = 0;
+    long _count;
     int _maxP;
 
     protected override async Task OnInitializedAsync()
@@ -102,6 +100,7 @@
             .ToListAsync();
         StateHasChanged();
     }
+
     async Task DelAll()
     {
         await Db.Delete<Article>()

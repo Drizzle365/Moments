@@ -11,7 +11,7 @@
                 <span class="header-left">
                     <span @onclick='() => { JsRuntime.InvokeVoidAsync("scrollToTop"); }'>@ConfigService.Get("Title")</span>
                 </span>
-                <span class="header-right" data-bs-toggle="modal" data-bs-target="#infoModal">
+                <span class="header-right" data-bs-toggle="modal" data-bs-target="#info-modal">
                     <div style="color: white;margin-right: 10px">
                         <span class="m-1">
                             <i class="fa-solid fa-user-group"></i>朋友：@_friends.Count
@@ -63,7 +63,7 @@
     </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModal" aria-hidden="true">
+<div class="modal fade" id="info-modal" tabindex="-1" aria-labelledby="infoModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -88,12 +88,34 @@
     </div>
 </div>
 
+<div class="modal fade" id="friend-info-modal" tabindex="-1" aria-labelledby="infoModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">@_select?.Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer" style="position:relative;">
+                <div style="position: absolute;left: 15px;">
+                    <i class="fa-brands fa-github"></i>
+                    <a target="_blank" style="color: #000000" href="https://github.com/Drizzle365/Moments">Moments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @code{
     long _countArticle;
 
     List<Article> _nodeList = new();
     List<Friend> _friends = new();
     int _p = 1;
+    Friend? _select;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,7 +124,6 @@
             .Limit(10)
             .ToListAsync();
         _friends = await Db.Select<Friend>().ToListAsync();
-        StateHasChanged();
     }
 
     string GetName(int? id)
@@ -128,7 +149,6 @@
             .ToListAsync();
         _nodeList.AddRange(more);
         _p++;
-        StateHasChanged();
     }
 
 }

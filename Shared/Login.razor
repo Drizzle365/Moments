@@ -20,7 +20,7 @@
                 Token = _passWord,
                 Role = "Admin"
             };
-            CustomAuthenticationStateProvider.Login(token);
+            await CustomAuthenticationStateProvider.Login(token);
         }
         else
         {

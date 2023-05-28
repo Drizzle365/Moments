@@ -18,6 +18,34 @@ public class FriendService
     }
 
     /// <summary>
+    /// 获取朋友总数
+    /// </summary>
+    /// <returns></returns>
+    public long Count()
+    {
+        return _db.Select<Friend>().Count();
+    }
+
+    /// <summary>
+    /// 获取所有朋友
+    /// </summary>
+    /// <returns></returns>
+    public List<Friend> List()
+    {
+        return _db.Select<Friend>().ToList();
+    }
+
+    /// <summary>
+    /// 异步获取所有朋友
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<Friend>> ListAsync()
+    {
+        return await _db.Select<Friend>().ToListAsync();
+    }
+    
+
+    /// <summary>
     /// 增加朋友记录
     /// </summary>
     /// <param name="item">朋友</param>
@@ -50,9 +78,12 @@ public class FriendService
             .ExecuteAffrows();
         return rows > 0;
     }
-    
 
-    public async void VerifyItem(Friend target)
+    /// <summary>
+    /// 验证朋友站点是否存在本站链接
+    /// </summary>
+    /// <param name="target"></param>
+    public async Task<bool> VerifyItem(Friend target)
     {
         if (target.VerifyUrl is not null)
         {
@@ -64,7 +95,7 @@ public class FriendService
             {
                 await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId)
                     .Set(x => x.Verify, FriendState.无法访问).ExecuteAffrowsAsync();
-                return;
+                return false;
             }
 
             var temp = await target.VerifyUrl.GetStringAsync();
@@ -72,12 +103,16 @@ public class FriendService
             {
                 await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId).Set(x => x.Verify, FriendState.正常)
                     .ExecuteAffrowsAsync();
+                return true;
             }
             else
             {
                 await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId).Set(x => x.Verify, FriendState.失链)
                     .ExecuteAffrowsAsync();
+                return false;
             }
         }
+
+        return false;
     }
 }
