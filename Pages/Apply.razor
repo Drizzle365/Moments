@@ -1,0 +1,65 @@
+﻿@page "/Apply"
+@using Moments.Service
+@using Moments.Model
+@inject FriendService FriendService
+@inject IJSRuntime JsRuntime
+<div style="text-align: center;padding: 20px">
+    <div class="input-group mb-3">
+        <span class="input-group-text">标题*</span>
+        <input @bind="_item.Name" type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">简介</span>
+        <input @bind="_item.Info" type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">LOGO</span>
+        <input @bind="_item.Avatar" type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">链接*</span>
+        <input @bind="_item.Link" type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Feed</span>
+        <input @bind="_item.Rss" type="text" class="form-control">
+
+        <select class="form-select" @bind="_item.Rule">
+            @foreach (var item in Enum.GetNames(typeof(Rule)))
+            {
+                <option value="@item">@item</option>
+            }
+        </select>
+
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">验证链接</span>
+        <input @bind="_item.VerifyUrl" type="text" class="form-control">
+    </div>
+    <div class="form-text">验证链接可以填写您的站点的收录本站的内页地址</div>
+    <button class="mt-5 btn btn-primary" @onclick="Submit">申请</button>
+</div>
+
+@code
+{
+    readonly Friend _item = new ();
+    
+    async Task Submit()
+    {
+        if (_item.Link is null)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "请填写带*的必填项目！");
+            return;
+        }
+        var temp = FriendService.First(x => x.Link == _item.Link);
+        if (temp is not null)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "请勿重复提交！");
+            return;
+        }
+        _item.Visible = false;
+        FriendService.Add(_item);
+        await JsRuntime.InvokeVoidAsync("alert", "提交申请成功！");
+    }
+}

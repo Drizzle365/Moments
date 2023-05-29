@@ -33,7 +33,7 @@ public class ConfigService
         var rows = _db.Update<Config>()
             .Where(x => x.Key == key)
             .Set(x => x.Key, key)
-            .Set(x=>x.Value,value)
+            .Set(x => x.Value, value)
             .ExecuteAffrows();
         UpdateConfig();
         return rows > 0;

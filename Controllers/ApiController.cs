@@ -10,11 +10,14 @@ public class ApiController : ControllerBase
 {
     private readonly IFreeSql _db;
     private readonly FriendService _friendService;
+    private readonly ArticleService _articleService;
 
-    public ApiController(IFreeSql db, FriendService friendService)
+
+    public ApiController(IFreeSql db, FriendService friendService, ArticleService articleService)
     {
         _db = db;
         _friendService = friendService;
+        _articleService = articleService;
     }
 
     /// <summary>
@@ -24,8 +27,7 @@ public class ApiController : ControllerBase
     [HttpGet("friends")]
     public async Task<ActionResult<List<Friend>>> Friends()
     {
-        var temp = await _db.Select<Friend>().Where(x => x.Visible == true)
-            .ToListAsync();
+        var temp = await _friendService.ListAsync(true);
         var random = new Random();
         var friends = new List<Friend>();
         foreach (var item in temp)
@@ -41,20 +43,8 @@ public class ApiController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("articles")]
-    public async Task<ActionResult<List<Article>>> Articles()
+    public async Task<ActionResult<List<Article>>> Articles(int? friendId = null, int page = 1, int size = 10)
     {
-        return await _db.Select<Article>()
-            .ToListAsync();
-    }
-
-    /// <summary>
-    /// 申请友链
-    /// </summary>
-    /// <param name="self"></param>
-    /// <returns></returns>
-    public ActionResult<bool> Apply(Friend self)
-    {
-        _friendService.Add(self);
-        return true;
+        return await _articleService.ListAsync(friendId, page, size);
     }
 }

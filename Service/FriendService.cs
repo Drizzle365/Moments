@@ -1,4 +1,5 @@
-﻿using Flurl.Http;
+﻿using System.Linq.Expressions;
+using Flurl.Http;
 using Moments.Model;
 
 namespace Moments.Service;
@@ -20,10 +21,23 @@ public class FriendService
     /// <summary>
     /// 获取朋友总数
     /// </summary>
+    /// <param name="isVis">筛选可见性</param>
     /// <returns></returns>
-    public long Count()
+    public long Count(bool? isVis = null)
     {
-        return _db.Select<Friend>().Count();
+        return isVis is not null
+            ? _db.Select<Friend>().Where(x => x.Visible == isVis).Count()
+            : _db.Select<Friend>().Count();
+    }
+
+    /// <summary>
+    /// 获取一个朋友
+    /// </summary>
+    /// <param name="exp">过滤表达式</param>
+    /// <returns></returns>
+    public Friend? First(Expression<Func<Friend, bool>> exp)
+    {
+        return _db.Select<Friend>().Where(exp).First();
     }
 
     /// <summary>
@@ -120,5 +134,18 @@ public class FriendService
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 设置朋友的可见性
+    /// </summary>
+    /// <param name="friendId">朋友编号</param>
+    /// <param name="vis">可见性</param>
+    /// <returns></returns>
+    public async Task<bool> SetVis(int friendId, bool vis)
+    {
+        var row = await _db.Update<Friend>().Where(x => x.FriendId == friendId).Set(x => x.Visible, vis)
+            .ExecuteAffrowsAsync();
+        return row > 0;
     }
 }

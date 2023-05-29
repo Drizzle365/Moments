@@ -37,7 +37,7 @@
                 {
                     <div class="item">
                         <div class="left">
-                            <img @onclick="async () => Select(item.FriendId)" data-bs-toggle="modal" data-bs-target="#friend-info-modal" src="@GetAvatar(item.FriendId)" alt="头像">
+                            <img @onclick="() => Task.FromResult(Select(item.FriendId))" data-bs-toggle="modal" data-bs-target="#friend-info-modal" src="@GetAvatar(item.FriendId)" alt="头像">
                         </div>
                         <div class="right">
                             <div class="name">
@@ -169,7 +169,7 @@
     {
         var f = _friends.Find(x => x.FriendId == target);
         _select = f;
-        _selectArticles = await ArticleService.List(target);
+        _selectArticles = await ArticleService.ListAsync(target);
     }
 
 }

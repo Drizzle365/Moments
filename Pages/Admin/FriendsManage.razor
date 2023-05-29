@@ -4,9 +4,10 @@
 @inject IFreeSql Db
 @inject FriendService FriendService
 @inject GatherService GatherService
+@inject IJSRuntime JsRuntime
 <div class="m-1">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add">添加新朋友</button>
-    <button class="btn btn-danger" @onclick="Check" data-bs-toggle="modal" data-bs-target="#verify-info">验证状态</button>
+    <button class="btn btn-danger" @onclick="Check">验证状态</button>
     <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="">订阅中心</button>
 </div>
 <table class="table" style="margin-top: 10px">
@@ -25,6 +26,18 @@
                 <a target="_blank" href="@item.Link">@item.Name</a>
             </td>
             <td>
+                <span style="margin-right: 10px;cursor: pointer" @onclick="(() => SwitchVis(item))">
+                    <span class="badge rounded-pill text-bg-primary">
+                        @if (item.Visible)
+                        {
+                            <span>可见</span>
+                        }
+                        else
+                        {
+                            <span>隐藏</span>
+                        }
+                    </span>
+                </span>
                 @switch (item.Verify)
                 {
                     case FriendState.正常:
@@ -40,6 +53,7 @@
                         <span class="badge text-bg-danger">@item.Verify</span>
                         break;
                 }
+
             </td>
             <td style="text-align: center">
                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#friend-info" @onclick="() => { _info = item; }">查看</button>
@@ -252,28 +266,6 @@
         </div>
     </div>
 </div>
-<!-- Verify Modal -->
-<div class="modal fade" id="verify-info" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">正在检查（@_cnt / @_friendCount）：</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: @((int)_cnt * 1.0 / (_friendCount == 0 ? 1 : _friendCount) * 100)%"></div>
-                </div>
-            </div>
-            @if (_cnt == _friendCount)
-            {
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">完成</button>
-                </div>
-            }
-        </div>
-    </div>
-</div>
 
 @code {
     List<Friend> _friends = new();
@@ -281,13 +273,10 @@
     Friend _del = new();
     Friend _add = new();
     Friend _info = new();
-    long _friendCount;
-    long _cnt;
 
     protected override async Task OnInitializedAsync()
     {
         _friends = await Db.Select<Friend>().ToListAsync();
-        _friendCount = _friends.Count;
     }
 
     async Task Add()
@@ -319,17 +308,22 @@
         GatherService.GatherRssItem(item);
     }
 
-    void Check()
+    async void Check()
     {
-        _cnt = 0;
         foreach (var item in _friends)
         {
 #pragma warning disable CS4014
             FriendService.VerifyItem(item);
 #pragma warning restore CS4014
-            _cnt++;
-            StateHasChanged();
         }
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", "状态检测中，请等待1分钟后刷新本页面");
+    }
+
+    async Task SwitchVis(Friend item)
+    {
+        await FriendService.SetVis(item.FriendId, !item.Visible);
+        item.Visible = !item.Visible;
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", "状态变更成功！");
     }
 
 }

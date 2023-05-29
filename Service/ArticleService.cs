@@ -18,15 +18,17 @@ public class ArticleService
     /// <param name="page">页数</param>
     /// <param name="size">单页大小</param>
     /// <returns></returns>
-    public async Task<List<Article>> List(int? friendId = null, int page = 1, int size = 10)
+    public async Task<List<Article>> ListAsync(int? friendId = null, int page = 1, int size = 10)
     {
         return friendId is not null
             ? await _db.Select<Article>()
                 .Where(x => x.FriendId == friendId)
+                .OrderBy("PubDate DESC")
                 .Offset((page - 1) * size)
                 .Limit(size)
                 .ToListAsync()
             : await _db.Select<Article>()
+                .OrderBy("PubDate DESC")
                 .Offset((page - 1) * size)
                 .Limit(size)
                 .ToListAsync();

@@ -1,27 +1,15 @@
-﻿@page "/Admin/Rss"
+﻿@page "/Admin/Feed"
 @using Moments.Model
+@using Moments.Service
 @inject IFreeSql Db
+@inject IJSRuntime JsRuntime
+@inject GatherService GatherService
 <div class="m-1">
-    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rss-info" @onclick="DelAll">清空数据</button>
+    <button class="btn btn-danger" @onclick="DelAll">清空数据</button>
+    <button class="btn btn-success" @onclick="Gather">一件采集</button>
+    
 </div>
 
-<!-- Info Modal -->
-<div class="modal fade" id="rss-info" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">信息</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                清空成功，请手动刷新页面
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
 <div>
     <div class="list-group list-group-flush border-bottom scrollarea">
         @foreach (var item in _nodeList)
@@ -106,6 +94,15 @@
         await Db.Delete<Article>()
             .Where("1=1")
             .ExecuteAffrowsAsync();
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", "清空成功");
+        _nodeList.Clear();
+    }
+
+    async Task Gather()
+    {
+        GatherService.GatherRssAll();
+
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", "采集任务启动成功，请稍等一会刷新本页面！");
     }
 
 }
