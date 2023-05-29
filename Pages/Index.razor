@@ -3,6 +3,7 @@
 @using Moments.Service
 @inject IFreeSql Db;
 @inject IJSRuntime JsRuntime
+@inject ArticleService ArticleService
 @inject ConfigService ConfigService
 <div id="main">
     <div class="main-content">
@@ -36,7 +37,7 @@
                 {
                     <div class="item">
                         <div class="left">
-                            <img src="@GetAvatar(item.FriendId)" alt="头像">
+                            <img @onclick="async () => Select(item.FriendId)" data-bs-toggle="modal" data-bs-target="#friend-info-modal" src="@GetAvatar(item.FriendId)" alt="头像">
                         </div>
                         <div class="right">
                             <div class="name">
@@ -92,16 +93,28 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5">@_select?.Name</h1>
+                <h1 class="modal-title fs-5">最近文章</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div style="text-align: center">
+                    <img style="border-radius: 100%;width: 100px;height: 100px" src="@_select?.Avatar" alt=""/>
+                </div>
+                <div style="text-align: center;margin-top: 5px">
+                    <span class="badge rounded-pill text-bg-primary" style="font-size: large">@_select?.Name</span>
+                </div>
 
-            </div>
-            <div class="modal-footer" style="position:relative;">
-                <div style="position: absolute;left: 15px;">
-                    <i class="fa-brands fa-github"></i>
-                    <a target="_blank" style="color: #000000" href="https://github.com/Drizzle365/Moments">Moments</a>
+                <div class="list-group mt-3">
+                    @foreach (var item in _selectArticles)
+                    {
+                        <a target="_blank" href="@item.Link" class="list-group-item list-group-item-action" aria-current="true">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">@item.Title</h6>
+                                <small>@item.PubDate</small>
+                            </div>
+                            <p class="mb-1" style="font-size: smaller;color: #8c959f">@item.Description</p>
+                        </a>
+                    }
                 </div>
             </div>
         </div>
@@ -115,6 +128,7 @@
     List<Friend> _friends = new();
     int _p = 1;
     Friend? _select;
+    List<Article> _selectArticles = new List<Article>();
 
 
     protected override async Task OnInitializedAsync()
@@ -149,6 +163,13 @@
             .ToListAsync();
         _nodeList.AddRange(more);
         _p++;
+    }
+
+    async Task Select(int target)
+    {
+        var f = _friends.Find(x => x.FriendId == target);
+        _select = f;
+        _selectArticles = await ArticleService.List(target);
     }
 
 }

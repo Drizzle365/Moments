@@ -29,21 +29,27 @@ public class FriendService
     /// <summary>
     /// 获取所有朋友
     /// </summary>
+    /// <param name="isVis">筛选可见性</param>
     /// <returns></returns>
-    public List<Friend> List()
+    public List<Friend> List(bool? isVis = null)
     {
-        return _db.Select<Friend>().ToList();
+        return isVis is not null
+            ? _db.Select<Friend>().Where(x => x.Visible == isVis).ToList()
+            : _db.Select<Friend>().ToList();
     }
 
     /// <summary>
     /// 异步获取所有朋友
     /// </summary>
+    /// <param name="isVis">筛选可见性</param>
     /// <returns></returns>
-    public async Task<List<Friend>> ListAsync()
+    public async Task<List<Friend>> ListAsync(bool? isVis = null)
     {
-        return await _db.Select<Friend>().ToListAsync();
+        return isVis is not null
+            ? await _db.Select<Friend>().Where(x => x.Visible == isVis).ToListAsync()
+            : await _db.Select<Friend>().ToListAsync();
     }
-    
+
 
     /// <summary>
     /// 增加朋友记录

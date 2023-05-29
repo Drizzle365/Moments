@@ -5,10 +5,12 @@ namespace Moments.Service;
 public class TimedTasksService
 {
     private readonly GatherService _gatherService;
+    private readonly ILogger<TimedTasksService> _logger;
 
-    public TimedTasksService(GatherService gatherService)
+    public TimedTasksService(GatherService gatherService, ILoggerFactory logger)
     {
         _gatherService = gatherService;
+        _logger = logger.CreateLogger<TimedTasksService>();
     }
 
     public void Start(double interval)
@@ -22,7 +24,7 @@ public class TimedTasksService
 
     private void Gather(object source, ElapsedEventArgs e)
     {
-        Console.WriteLine(DateTime.Now + " : 开始采集任务");
+        _logger.LogInformation(DateTime.Now + " : 开始采集任务");
         _gatherService.GatherRssAll();
     }
 }

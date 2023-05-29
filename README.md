@@ -1,12 +1,13 @@
 # <center> Moments
 
-###### <center> 构建博友们的朋友圈 —— 连接你我，创造价值
+<div style="text-align: center;font-weight: bold">
+构建博友们的朋友圈 —— 连接你我，创造价值
+</div>
 
 <div style="text-align: center;">
 
-![](https://img.shields.io/badge/DotNET-7-purple?style=for-the-badge)
 ![](https://img.shields.io/badge/Blazor-Server-purple?style=for-the-badge&logo=blazor)
-![](https://img.shields.io/badge/BootStrap-5-blue?style=for-the-badge)
+![](https://img.shields.io/badge/BootStrap-5-blue?style=for-the-badge&logo=bootstrap)
 ![](https://img.shields.io/badge/FreeSql-3-green?style=for-the-badge)
 ![](https://img.shields.io/badge/Flurl-3-yellow?style=for-the-badge)
 
@@ -46,7 +47,8 @@ drizzle2001/moments
 运行后访问 `http://IP:3000` 即可  
 建议使用反向代理绑定域名访问
 
-图文教程: https://dearain.cn/archives/2069/
+图文教程（临时）: https://dearain.cn/archives/2069/   
+完善的文档中心正在构建中
 
 ## 其他相关
 
@@ -56,7 +58,8 @@ drizzle2001/moments
 
 ### 如何配置
 
-后台地址：` http://IP:3000/admin`
+后台地址：` http://IP:3000/admin`  
+默认密码：lantin （安装完成后应立即进入后台修改）
 
 ## 展示
 
