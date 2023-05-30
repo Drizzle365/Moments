@@ -25,6 +25,10 @@
     <span class="input-group-text">一言</span>
     <input type="text" class="form-control" @bind="_sentence">
 </div>
+<div class="input-group mb-3">
+    <span class="input-group-text">头图</span>
+    <input type="text" class="form-control" @bind="_banner">
+</div>
 <div class="m-3" style="text-align: center">
     <button class="btn btn-success" @onclick="Save" data-bs-toggle="modal" data-bs-target="#config-info">保存</button>
 </div>
@@ -54,6 +58,7 @@
     string? _name;
     string? _avatar;
     string? _sentence;
+    string? _banner;
 
     protected override void OnInitialized()
     {
@@ -63,6 +68,7 @@
         _name = ConfigService.Get("Name");
         _avatar = ConfigService.Get("Avatar");
         _sentence = ConfigService.Get("Sentence");
+        _banner = ConfigService.Get("Banner");
     }
 
     void Save()
@@ -73,6 +79,7 @@
         ConfigService.Set("Name", _name);
         ConfigService.Set("Avatar", _avatar);
         ConfigService.Set("Sentence", _sentence);
+        ConfigService.Set("Banner", _banner);
     }
 
 
