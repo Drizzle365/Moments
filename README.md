@@ -1,16 +1,13 @@
-# <center> Moments
+<div align="center">
+<img src="./wwwroot/character.png" alt="Logo" style="width:96px">
 
-<div style="text-align: center;font-weight: bold">
+# Moments
 构建博友们的朋友圈 —— 连接你我，创造价值
-</div>
-
-<div style="text-align: center;">
 
 ![](https://img.shields.io/badge/Blazor-Server-purple?style=for-the-badge&logo=blazor)
 ![](https://img.shields.io/badge/BootStrap-5-blue?style=for-the-badge&logo=bootstrap)
 ![](https://img.shields.io/badge/FreeSql-3-green?style=for-the-badge)
 ![](https://img.shields.io/badge/Flurl-3-yellow?style=for-the-badge)
-
 </div>
 
 Moments 为你提供了一个全新的方式来与你关注的博客作者和读者互动，让你的博客体验更加丰富和充实。
