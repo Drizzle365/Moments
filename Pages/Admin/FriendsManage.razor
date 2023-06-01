@@ -8,7 +8,11 @@
 <div class="m-1">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add">添加新朋友</button>
     <button class="btn btn-danger" @onclick="Check">验证状态</button>
-    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="">订阅中心</button>
+    <button class="btn btn-secondary" @onclick="Export">导出数据</button>
+    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#import">导入数据</button>
+    <button class="btn btn-danger" @onclick="Clear">清空数据</button>
+
+
 </div>
 <table class="table" style="margin-top: 10px">
     <thead>
@@ -57,7 +61,7 @@
             </td>
             <td style="text-align: center">
                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#friend-info" @onclick="() => { _info = item; }">查看</button>
-                <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#friend-gather" @onclick="() => { GatherItem(item); }">采集</button>
+                <button class="btn btn-sm btn-dark" @onclick="() => { GatherItem(item); }">采集</button>
                 <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit" @onclick="() => { _edit = item; }">编辑</button>
                 <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#del" @onclick="() => { _del = item; }">删除</button>
             </td>
@@ -249,16 +253,19 @@
         </div>
     </div>
 </div>
-<!-- Gather Modal -->
-<div class="modal fade" id="friend-gather" tabindex="-1" aria-hidden="true">
+<!-- Import Modal -->
+<div class="modal fade" id="import" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5">采集成功</h1>
+                <h1 class="modal-title fs-5">导入数据</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                采集成功~
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">选择导出的CSV文件</label>
+                    <InputFile  OnChange="@Import" multiple />
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
@@ -266,6 +273,7 @@
         </div>
     </div>
 </div>
+
 
 @code {
     List<Friend> _friends = new();
@@ -306,6 +314,7 @@
     void GatherItem(Friend item)
     {
         GatherService.GatherRssItem(item);
+        JsRuntime.InvokeVoidAsync("toast", "提示：", "采集成功");
     }
 
     async void Check()
@@ -324,6 +333,29 @@
         await FriendService.SetVis(item.FriendId, !item.Visible);
         item.Visible = !item.Visible;
         await JsRuntime.InvokeVoidAsync("toast", "提示：", "状态变更成功！");
+    }
+
+    async Task Export()
+    {
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", "正在导出数据中，请稍后···");
+        var path = await FriendService.Export();
+        var btn = $"<div><a href=\"{path}\" class=\"btn btn-sm btn-primary\">下载</a></div>";
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", $"数据导出成功:{path}" + btn);
+        Console.WriteLine($"数据导出成功:{path}" + btn);
+    }
+
+    async Task Import(InputFileChangeEventArgs e)
+    {
+        var file = e.GetMultipleFiles().First();
+        Console.WriteLine(file.Name);
+        await FriendService.Import(file.OpenReadStream());
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", $"导入成功，请刷新查看！");
+    }
+
+    async Task Clear()
+    {
+        FriendService.DelAll();
+        await JsRuntime.InvokeVoidAsync("toast", "提示：", "清空数据成功，请刷新！");
     }
 
 }

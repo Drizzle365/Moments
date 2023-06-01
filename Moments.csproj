@@ -10,6 +10,7 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\export\friends_2023-06-01-13-07-50.csv" />
     </ItemGroup>
 
     <ItemGroup>

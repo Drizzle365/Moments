@@ -90,13 +90,28 @@ public class FriendService
             .ExecuteAffrows();
         return rows > 0;
     }
-
+    /// <summary>
+    /// 删除朋友
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     public bool Del(Friend item)
     {
         var rows = _db.Delete<Friend>()
             .Where(x => x.FriendId == item.FriendId)
             .ExecuteAffrows();
         return rows > 0;
+    }
+    /// <summary>
+    /// 清空数据表
+    /// </summary>
+    /// <returns></returns>
+    public int DelAll()
+    {
+        var rows = _db.Delete<Friend>()
+            .Where("1=1")
+            .ExecuteAffrows();
+        return rows;
     }
 
     /// <summary>
@@ -125,12 +140,10 @@ public class FriendService
                     .ExecuteAffrowsAsync();
                 return true;
             }
-            else
-            {
-                await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId).Set(x => x.Verify, FriendState.失链)
-                    .ExecuteAffrowsAsync();
-                return false;
-            }
+
+            await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId).Set(x => x.Verify, FriendState.失链)
+                .ExecuteAffrowsAsync();
+            return false;
         }
 
         return false;
@@ -147,5 +160,78 @@ public class FriendService
         var row = await _db.Update<Friend>().Where(x => x.FriendId == friendId).Set(x => x.Visible, vis)
             .ExecuteAffrowsAsync();
         return row > 0;
+    }
+
+    /// <summary>
+    /// 导出数据
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> Export()
+    {
+        var friends = await ListAsync();
+        var path = $"wwwroot/export";
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        var exportFilePath = $"wwwroot/export/friends_{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv"}";
+        await using StreamWriter writer = new StreamWriter(exportFilePath);
+        foreach (Friend item in friends)
+        {
+            await writer.WriteLineAsync(
+                $"{item.Name},{item.Avatar},{item.Info}," +
+                $"{item.Email},{item.Link},{item.Rss}," +
+                $"{item.Rule},{item.VerifyUrl},{item.Verify},{item.Visible}"
+            );
+        }
+
+        return exportFilePath.Replace("wwwroot", "");
+    }
+
+    /// <summary>
+    /// 导入数据
+    /// </summary>
+    /// <param name="file">文件</param>
+    /// <returns></returns>
+    public async Task<bool> Import(Stream file)
+    {
+        List<Friend> friends = new List<Friend>();
+        using StreamReader reader = new StreamReader(file);
+        while (await reader.ReadLineAsync() is { } line)
+        {
+            string[] data = line.Split(',');
+            string name = data[0];
+            string avatar = (data[1]);
+            string info = (data[2]);
+            string email = (data[3]);
+            string link = (data[4]);
+            string rss = (data[5]);
+            Rule rule = (Rule)Enum.Parse(typeof(Rule), data[6]);
+            string verifyUrl = (data[7]);
+            FriendState verify = (FriendState)Enum.Parse(typeof(FriendState), data[8]);
+            bool visible = bool.Parse(data[9]);
+            Friend friend = new Friend
+            {
+                Name = name,
+                Avatar = avatar,
+                Info = info,
+                Email = email,
+                Link = link,
+                Rss = rss,
+                Rule = rule,
+                VerifyUrl = verifyUrl,
+                Verify = verify,
+                Visible = visible
+            };
+            friends.Add(friend);
+        }
+
+        foreach (var item in friends)
+        {
+            Add(item);
+        }
+
+        return true;
     }
 }
