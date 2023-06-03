@@ -4,283 +4,344 @@
 @inject IFreeSql Db
 @inject FriendService FriendService
 @inject GatherService GatherService
-@inject IJSRuntime JsRuntime
-<div class="m-1">
-    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add">添加新朋友</button>
-    <button class="btn btn-danger" @onclick="Check">验证状态</button>
-    <button class="btn btn-secondary" @onclick="Export">导出数据</button>
-    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#import">导入数据</button>
-    <button class="btn btn-danger" @onclick="Clear">清空数据</button>
+@inject NavigationManager NavigationManager
+<MCard Color="white lighten-4 mb-2" Style="border-radius: 12px!important;padding: 6px 0;" Elevation="0"
+       Flat
+       Tile>
+    <MToolbar Dense Elevation="0">
+        <MButton class="ma-2 white--text"
+                 OnClick="() => _addModal = true"
+                 Color="blue-grey">
+            添加新朋友
+            <MIcon Right Dark>
+                fa:fas fa-plus
+            </MIcon>
+        </MButton>
+        <MButton class="ma-2 white--text"
+                 Color="blue-grey"
+                 OnClick="Check">
+            验证状态
+            <MIcon Right Dark>
+                fa:fas fa-check-square
+            </MIcon>
+        </MButton>
+        <MButton class="ma-2 white--text"
+                 Color="blue-grey"
+                 OnClick="Clear">
+            清空数据
+            <MIcon Right Dark>
+                fa:fas fa-trash
+            </MIcon>
+        </MButton>
+        <MSpacer></MSpacer>
+        <MButton class="ma-2 white--text"
+                 Color="blue-grey"
+                 OnClick="async Task() => { await Export();}">
+            导出数据
+            <MIcon Right Dark>
+                fa:fas fa-download
+            </MIcon>
+        </MButton>
+        <MButton class="ma-2 white--text"
+                 Color="blue-grey">
+            导入数据
+            <div style="opacity: 0;position: absolute;left: 0;right:0">
+                <InputFile OnChange="@Import" style="width: 100%"/>
+            </div>
+            <MIcon Right Dark>
+                fa:fas fa-upload
+            </MIcon>
+        </MButton>
+    </MToolbar>
+</MCard>
+<MDataTable FixedRight
+            Headers="_headers"
+            Items="_friends"
+            Width="@("100%")"
+            ItemKey="r => r.FriendId.ToString()"
+            Class="elevation-1">
+    <ItemColContent>
+        @if (context.Header.Value == "actions")
+        {
+            <MIcon Small
+                   OnClick="() => GatherItem(context.Item)">
+                mdi:mdi-rss
+            </MIcon>
+            <MIcon Small
+                   Class="mr-2"
+                   OnClick="() => EditItem(context.Item)">
+                mdi:mdi-pencil
+            </MIcon>
+            <MIcon Small
+                   OnClick="() => DeleteItem(context.Item)">
+                mdi:mdi-delete
+            </MIcon>
+        }
+        else
+        {
+            @context.Value
+        }
+    </ItemColContent>
+</MDataTable>
+<MDialog @bind-Value="_dialogEdit"
+         MaxWidth="500">
+    <MCard>
+        <MCardTitle>
+            <span class="text-h5">编辑</span>
+        </MCardTitle>
+        <MCardText>
+            <MContainer>
+                <MRow>
+                    <MCol Cols="12"
+                          Sm="4"
+                          Md="4">
+                        <MTextField @bind-Value="_editedItem.Name"
+                                    Label="博主名称">
+                        </MTextField>
+                    </MCol>
+                    <MCol Cols="12"
+                          Sm="4"
+                          Md="4">
+                        <MTextField @bind-Value="_editedItem.Info"
+                                    Label="简介">
+                        </MTextField>
+                    </MCol>
+                    <MCol Cols="12"
+                          Sm="4"
+                          Md="4">
+                        <MTextField @bind-Value="_editedItem.Email"
+                                    Label="邮箱">
+                        </MTextField>
+                    </MCol>
+                    <MCol Cols="12"
+                          Sm="12"
+                          Md="12">
+                        <MTextField @bind-Value="_editedItem.Avatar"
+                                    Label="头像">
+                        </MTextField>
+                    </MCol>
+                    <MCol Cols="12"
+                          Sm="4"
+                          Md="4">
+                        <MSelect Items="Enum.GetNames(typeof(Rule))"
+                                 @bind-Value="@_editedItem.Rule"
+                                 ItemText="u => u"
+                                 ItemValue="u => (Rule)Enum.Parse(typeof(Rule), u)"
+                                 Label="规则"
+                                 Dense
+                                 Filled
+                                 HideDetails="@("auto")">
+                        </MSelect>
+                    </MCol>
+                    <MCol Cols="12"
+                          Sm="6"
+                          Md="8">
+                        <MTextField @bind-Value="_editedItem.Feed"
+                                    Label="Feed">
+                        </MTextField>
+                    </MCol>
 
-
-</div>
-<table class="table" style="margin-top: 10px">
-    <thead>
-    <tr>
-        <th scope="col">博客</th>
-        <th scope="col">友链状态</th>
-        <th scope="col" style="text-align: center">操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in _friends)
-    {
-        <tr>
-            <td>
-                <a target="_blank" href="@item.Link">@item.Name</a>
-            </td>
-            <td>
-                <span style="margin-right: 10px;cursor: pointer" @onclick="(() => SwitchVis(item))">
-                    <span class="badge rounded-pill text-bg-primary">
-                        @if (item.Visible)
+                    <MCol Cols="12"
+                          Sm="12"
+                          Md="12">
+                        <MTextField @bind-Value="_editedItem.Link"
+                                    Label="链接">
+                        </MTextField>
+                    </MCol>
+                    <MCol Cols="12"
+                          Sm="12"
+                          Md="12">
+                        <MTextField @bind-Value="_editedItem.VerifyUrl"
+                                    Label="验证地址">
+                        </MTextField>
+                    </MCol>
+                    <MCol Cols="12"
+                          Sm="12"
+                          Md="12">
+                        @if (_editedItem.Visible)
                         {
-                            <span>可见</span>
+                            <MChip Class="ma-2" Style="cursor: pointer"
+                                   TextColor="white"
+                                   OnClick="async Task() => { await SwitchVis(_editedItem); }"
+                                   Color="green">
+                                可见
+                            </MChip>
                         }
                         else
                         {
-                            <span>隐藏</span>
+                            <MChip Class="ma-2" Style="cursor: pointer"
+                                   Color="red"
+                                   OnClick="async Task() => { await SwitchVis(_editedItem); }"
+                                   TextColor="white">
+                                隐藏
+                            </MChip>
                         }
-                    </span>
-                </span>
-                @switch (item.Verify)
-                {
-                    case FriendState.正常:
-                        <span class="badge text-bg-success">@item.Verify</span>
-                        break;
-                    case FriendState.未知:
-                        <span class="badge text-bg-secondary">@item.Verify</span>
-                        break;
-                    case FriendState.无法访问:
-                        <span class="badge text-bg-dark">@item.Verify</span>
-                        break;
-                    case FriendState.失链:
-                        <span class="badge text-bg-danger">@item.Verify</span>
-                        break;
-                }
+                    </MCol>
+                </MRow>
+            </MContainer>
+        </MCardText>
+        <MCardActions>
+            <MSpacer></MSpacer>
+            <MButton Color="blue darken-1"
+                     Text
+                     OnClick="Close">
+                取消
+            </MButton>
+            <MButton Color="blue darken-1"
+                     Text
+                     OnClick="Save">
+                保存
+            </MButton>
+        </MCardActions>
+    </MCard>
+</MDialog>
+<MDialog @bind-Value="_dialogDelete" MaxWidth="500">
+    <MCard>
+        <MCardTitle Class="text-h5">你确定要删除当前的朋友?</MCardTitle>
+        <MCardActions>
+            <MSpacer></MSpacer>
+            <MButton Color="blue darken-1" Text OnClick="CloseDelete">取消</MButton>
+            <MButton Color="blue darken-1" Text OnClick="DeleteItemConfirm">确定</MButton>
+            <MSpacer></MSpacer>
+        </MCardActions>
+    </MCard>
+</MDialog>
 
-            </td>
-            <td style="text-align: center">
-                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#friend-info" @onclick="() => { _info = item; }">查看</button>
-                <button class="btn btn-sm btn-dark" @onclick="() => { GatherItem(item); }">采集</button>
-                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit" @onclick="() => { _edit = item; }">编辑</button>
-                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#del" @onclick="() => { _del = item; }">删除</button>
-            </td>
-        </tr>
+@code {
+
+    private readonly List<DataTableHeader<Friend>> _headers = new()
+    {
+        new() { Text = "昵称", Value = nameof(Friend.Name) },
+        new() { Text = "可见性", Value = nameof(Friend.Visible) },
+        new() { Text = "状态", Value = nameof(Friend.Verify) },
+        new() { Text = "链接", Value = nameof(Friend.Link) },
+        new() { Text = "操作", Value = "actions", Sortable = false, Width = "100px", Align = DataTableHeaderAlign.Center, }
+    };
+
+    private bool _dialogEdit;
+    private bool _dialogDelete;
+    private Friend _editedItem = new();
+    private Friend _delItem = new();
+
+    void Close()
+    {
+        _dialogEdit = false;
+        _editedItem = new Friend();
     }
-    </tbody>
-</table>
 
-<!-- Add Modal -->
-<div class="modal fade" id="add" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">添加</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3 row">
-                    <label for="add_name" class="col-sm-2 col-xs-2 col-form-label">名称</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="add_name" @bind="_add.Name">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="add_avatar" class="col-sm-2 col-xs-2 col-form-label">头像</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="add_avatar" @bind="_add.Avatar">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="add_info" class="col-sm-2 col-xs-2 col-form-label">简介</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="add_info" @bind="_add.Info">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="add_email" class="col-sm-2 col-xs-2 col-form-label">邮箱</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="add_email" @bind="_add.Email">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="add_link" class="col-sm-2 col-xs-2 col-form-label">链接</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="add_link" @bind="_add.Link">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="add_rss" class="col-sm-2 col-xs-2 col-form-label">Rss</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="add_rss" @bind="_add.Rss">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="add_software" class="col-sm-2 col-xs-2 col-form-label">规则</label>
-                    <div class="col-sm-10">
-                        <select class="form-select" @bind="_add.Rule" id="add_software">
-                            @foreach (var item in Enum.GetNames(typeof(Rule)))
-                            {
-                                <option value="@item">@item</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="add_VerifyUrl" class="col-sm-2 col-xs-2 col-form-label">验证</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="add_VerifyUrl" @bind="_add.VerifyUrl">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="Add">添加</button>
-            </div>
-        </div>
-    </div>
-</div>
+    async Task Save()
+    {
+        await Db.Update<Friend>()
+            .SetSource(_editedItem)
+            .ExecuteAffrowsAsync();
+        Close();
+    }
 
-<!-- Edit Modal -->
-<div class="modal fade" id="edit" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">编辑：@_edit.Name</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3 row">
-                    <label for="name" class="col-sm-2 col-xs-2 col-form-label">名称</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="name" @bind="_edit.Name">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="avatar" class="col-sm-2 col-xs-2 col-form-label">头像</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="avatar" @bind="_edit.Avatar">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="info" class="col-sm-2 col-xs-2 col-form-label">简介</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="info" @bind="_edit.Info">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="email" class="col-sm-2 col-xs-2 col-form-label">邮箱</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="email" @bind="_edit.Email">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="link" class="col-sm-2 col-xs-2 col-form-label">链接</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="link" @bind="_edit.Link">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="rss" class="col-sm-2 col-xs-2 col-form-label">Rss</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="rss" @bind="_edit.Rss">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="software" class="col-sm-2 col-xs-2 col-form-label">规则</label>
-                    <div class="col-sm-10">
-                        <select class="form-select" @bind="_edit.Rule" id="software">
-                            @foreach (var item in Enum.GetNames(typeof(Rule)))
-                            {
-                                <option value="@item">@item</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="VerifyUrl" class="col-sm-2 col-xs-2 col-form-label">验证</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="VerifyUrl" @bind="_edit.VerifyUrl">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="Edit">保存</button>
-            </div>
-        </div>
-    </div>
-</div>
+    void EditItem(Friend item)
+    {
+        _editedItem = item;
+        _dialogEdit = true;
+    }
 
-<!-- Del Modal -->
-<div class="modal fade" id="del" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">删除：</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                确定要删除嘛！
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">不确定</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @onclick="Del">确定</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Info Modal -->
-<div class="modal fade" id="friend-info" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">查看：@_info.Name</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div>名称 : @_info.Name</div>
-                <div>头像 : @_info.Avatar</div>
-                <div>邮箱 : @_info.Email</div>
-                <div>简介 : @_info.Info</div>
-                <div>链接 : @_info.Link</div>
-                <div>Rss : @_info.Rss</div>
-                <div>规则 : @_info.Rule</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Import Modal -->
-<div class="modal fade" id="import" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">导入数据</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="formFile" class="form-label">选择导出的CSV文件</label>
-                    <InputFile  OnChange="@Import" multiple />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
+    void DeleteItem(Friend item)
+    {
+        _delItem = item;
+        _dialogDelete = true;
+    }
 
+    async Task DeleteItemConfirm()
+    {
+        await Db.Delete<Friend>()
+            .Where(x => x.FriendId == _delItem.FriendId)
+            .ExecuteAffrowsAsync();
+        _friends.Remove(_delItem);
+        CloseDelete();
+    }
+
+    void CloseDelete()
+    {
+        _dialogDelete = false;
+        _editedItem = new();
+    }
+
+}
+
+<PModal @bind-Value="_addModal"
+        FormModel="_add"
+        Persistent
+        Title="添加朋友"
+        Width="500"
+        OnSave="Add"
+        OnCancel="() => { _addModal = false; }">
+    <MRow>
+        <MCol Cols="12">
+            <MTextField @bind-Value="_add.Name"
+                        Label="博主名称"
+                        Dense
+                        Outlined
+                        HideDetails="@("auto")"/>
+        </MCol>
+        <MCol Cols="12">
+            <MTextField @bind-Value="_add.Avatar"
+                        Label="头像"
+                        Dense
+                        Outlined
+                        HideDetails="@("auto")"/>
+        </MCol>
+        <MCol Cols="12">
+            <MTextField @bind-Value="_add.Info"
+                        Label="简介"
+                        Dense
+                        Outlined
+                        HideDetails="@("auto")"/>
+        </MCol>
+        <MCol Cols="12">
+            <MTextField @bind-Value="_add.Email"
+                        Label="邮箱"
+                        Dense
+                        Outlined
+                        HideDetails="@("auto")"/>
+        </MCol>
+        <MCol Cols="12">
+            <MTextField @bind-Value="_add.Link"
+                        Label="链接"
+                        Dense
+                        Outlined
+                        HideDetails="@("auto")"/>
+        </MCol>
+        <MCol Cols="12">
+            <MSelect Items="Enum.GetNames(typeof(Rule))"
+                     @bind-Value="@_add.Rule"
+                     ItemText="u => u"
+                     ItemValue="u => (Rule)Enum.Parse(typeof(Rule), u)"
+                     Label="规则"
+                     Dense
+                     HideDetails="@("auto")"
+                     Outlined>
+            </MSelect>
+        </MCol>
+        <MCol Cols="12">
+            <MTextField @bind-Value="_add.Feed"
+                        Label="Feed"
+                        Dense
+                        Outlined
+                        HideDetails="@("auto")"/>
+        </MCol>
+
+        <MCol Cols="12">
+            <MTextField @bind-Value="_add.VerifyUrl"
+                        Label="验证"
+                        Dense
+                        Outlined
+                        HideDetails="@("auto")"/>
+        </MCol>
+    </MRow>
+</PModal>
 
 @code {
     List<Friend> _friends = new();
-    Friend _edit = new();
-    Friend _del = new();
     Friend _add = new();
-    Friend _info = new();
+    bool _addModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -296,28 +357,13 @@
         _add = new Friend();
     }
 
-    async Task Edit()
-    {
-        await Db.Update<Friend>()
-            .SetSource(_edit)
-            .ExecuteAffrowsAsync();
-    }
-
-    async Task Del()
-    {
-        await Db.Delete<Friend>()
-            .Where(x => x.FriendId == _del.FriendId)
-            .ExecuteAffrowsAsync();
-        _friends.Remove(_del);
-    }
-
     void GatherItem(Friend item)
     {
         GatherService.GatherRssItem(item);
-        JsRuntime.InvokeVoidAsync("toast", "提示：", "采集成功");
+        AdminLayout.PushSnackbars(AlertTypes.Info, item.Name + ": 采集成功！");
     }
 
-    async void Check()
+    void Check()
     {
         foreach (var item in _friends)
         {
@@ -325,37 +371,35 @@
             FriendService.VerifyItem(item);
 #pragma warning restore CS4014
         }
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", "状态检测中，请等待1分钟后刷新本页面");
+        AdminLayout.PushSnackbars(AlertTypes.Info, "状态检测中，请等待1分钟后刷新本页面！");
     }
 
     async Task SwitchVis(Friend item)
     {
         await FriendService.SetVis(item.FriendId, !item.Visible);
         item.Visible = !item.Visible;
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", "状态变更成功！");
+        AdminLayout.PushSnackbars(AlertTypes.Info, "状态变更成功！");
     }
 
     async Task Export()
     {
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", "正在导出数据中，请稍后···");
+        AdminLayout.PushSnackbars(AlertTypes.Info, "正在导出数据中，请稍后···");
         var path = await FriendService.Export();
-        var btn = $"<div><a href=\"{path}\" class=\"btn btn-sm btn-primary\">下载</a></div>";
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", $"数据导出成功:{path}" + btn);
-        Console.WriteLine($"数据导出成功:{path}" + btn);
+        AdminLayout.PushSnackbars(AlertTypes.Info, "数据导出成功,即将下载！");
+        NavigationManager.NavigateTo(path,true);
     }
 
     async Task Import(InputFileChangeEventArgs e)
     {
         var file = e.GetMultipleFiles().First();
-        Console.WriteLine(file.Name);
         await FriendService.Import(file.OpenReadStream());
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", $"导入成功，请刷新查看！");
+        AdminLayout.PushSnackbars(AlertTypes.Info, "导入成功，请刷新查看！");
     }
 
-    async Task Clear()
+    void Clear()
     {
         FriendService.DelAll();
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", "清空数据成功，请刷新！");
+        AdminLayout.PushSnackbars(AlertTypes.Info, "清空数据成功，请刷新！");
     }
 
 }

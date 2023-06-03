@@ -1,3 +1,4 @@
+using Masa.Blazor;
 using Microsoft.AspNetCore.Components.Authorization;
 using Moments.Service;
 
@@ -21,6 +22,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddControllers();
+builder.Services.AddMasaBlazor(options => {
+    options.ConfigureIcons(IconSet.FontAwesome);
+});
+
 builder.Services.AddSingleton(SqlFactory);
 builder.Services.AddSingleton<ConfigService>();
 builder.Services.AddSingleton<GatherService>();

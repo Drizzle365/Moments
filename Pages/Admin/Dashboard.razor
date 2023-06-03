@@ -2,32 +2,65 @@
 @using Moments.Model
 @inject IFreeSql Db
 
-<div class="card" style="width: 100%;">
-    <div class="card-body">
-        <h5 class="card-title">
-            朋友圈
-        </h5>
-        <h6 class="card-subtitle mb-2 text-muted">个人博客的社交圈子</h6>
-        <p class="card-text">
-            为个人博客增加粘性
-        </p>
-        <a target="_blank" href="/" class="card-link">查看前台</a>
+<MRow Class="mb-6"
+      NoGutters>
+    <MCol Cols="4" Class="pa-2">
+        <MCard Tile Elevation="0">
+            <MListItem ThreeLine>
+                <MListItemAvatar Tile Size=80 Color="grey">
+                    <MIcon Color="white" Size="64">mdi:mdi-account-arrow-up</MIcon>
+                </MListItemAvatar>
+                <MListItemContent>
+                    <div class="text-overline mb-4">
+                        朋友
+                    </div>
+                    <MListItemTitle Class="text-h5 mb-1">
+                        @_friend
+                    </MListItemTitle>
+                </MListItemContent>
+            </MListItem>
+        </MCard>
+    </MCol>
+    <MCol Cols="4" Class="pa-2">
+        <MCard Tile Elevation="0">
+            <MCard Tile Elevation="0">
+                <MListItem ThreeLine>
+                    <MListItemAvatar Tile Size=80 Color="grey">
+                        <MIcon Color="white" Size="64">mdi:mdi-rss</MIcon>
+                    </MListItemAvatar>
+                    <MListItemContent>
+                        <div class="text-overline mb-4">
+                            订阅
+                        </div>
+                        <MListItemTitle Class="text-h5 mb-1">
+                            @_article
+                        </MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+            </MCard>
+        </MCard>
+    </MCol>
+    <MCol Cols="4" Class="pa-2">
+        <MCard Tile Elevation="0">
+            <MCard Tile Elevation="0">
+                <MListItem ThreeLine>
+                    <MListItemAvatar Tile Size=80 Color="grey">
+                        <MIcon Color="white" Size="64">mdi:mdi-account-arrow-up</MIcon>
+                    </MListItemAvatar>
+                    <MListItemContent>
+                        <div class="text-overline mb-4">
+                            朋友
+                        </div>
+                        <MListItemTitle Class="text-h5 mb-1">
+                            99+
+                        </MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+            </MCard>
+        </MCard>
+    </MCol>
+</MRow>
 
-        <a target="_blank" href="https://github.com/Drizzle365/Moments" class="card-link">Github 开源仓库</a>
-        <a target="_blank" href="https://dearain.cn/" class="card-link">云烟成雨</a>
-    </div>
-</div>
-<ul class="list-group" style="margin-top: 20px">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-        朋友
-        <span class="badge bg-primary rounded-pill">@_friend</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-        文章
-        <span class="badge bg-primary rounded-pill">@_article</span>
-    </li>
-   
-</ul>
 
 @code {
     long _friend;

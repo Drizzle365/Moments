@@ -39,7 +39,7 @@ public class StartService
             .AppendData(new Config { Key = "Title", Value = "Moments" })
             .ExecuteAffrows();
         _db.Insert<Config>()
-            .AppendData(new Config { Key = "Origin", Value = "dearain.cn" })
+            .AppendData(new Config { Key = "Blog", Value = "dearain.cn" })
             .ExecuteAffrows();
         _db.Insert<Config>()
             .AppendData(new Config { Key = "Interval", Value = "3600000" })

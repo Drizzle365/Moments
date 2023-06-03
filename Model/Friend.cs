@@ -28,7 +28,7 @@ public class Friend
     public string? Info { get; set; }
     public string? Email { get; set; }
     public string? Link { get; set; }
-    public string? Rss { get; set; }
+    public string? Feed { get; set; }
     public Rule Rule { get; set; } = Rule.Rss;
     public string? VerifyUrl { get; set; }
 

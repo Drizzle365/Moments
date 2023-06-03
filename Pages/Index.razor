@@ -12,13 +12,13 @@
                 <span class="header-left">
                     <span @onclick='() => { JsRuntime.InvokeVoidAsync("scrollToTop"); }'>@ConfigService.Get("Title")</span>
                 </span>
-                <span class="header-right" data-bs-toggle="modal" data-bs-target="#info-modal">
+                <span class="header-right" @onclick="() => _info = true">
                     <div style="color: white;margin-right: 10px">
                         <span class="m-1">
-                            <i class="fa-solid fa-user-group"></i>朋友：@_friends.Count
+                            <i class="fas fa-user-friends"></i>朋友：@_friends.Count
                         </span>
                         <span class="m-1">
-                            <i class="fa-solid fa-palette"></i>
+                            <i class="fas fa-palette"></i>
                             文章：@_countArticle
                         </span>
                     </div>
@@ -37,7 +37,7 @@
                 {
                     <div class="item">
                         <div class="left">
-                            <img @onclick="() => Task.FromResult(Select(item.FriendId))" data-bs-toggle="modal" data-bs-target="#friend-info-modal" src="@GetAvatar(item.FriendId)" alt="头像">
+                            <img @onclick="() => {Task.FromResult(Select(item.FriendId)); _friendInfo = true;}" src="@GetAvatar(item.FriendId)" alt="头像">
                         </div>
                         <div class="right">
                             <div class="name">
@@ -57,79 +57,74 @@
             </div>
         </div>
         <div style="text-align: center;padding: 10px">
-            <button type="button" class="btn btn-outline-primary" @onclick="GetMore">
-                <i class="fa-solid fa-infinity"></i> 加载更多
-            </button>
+            <MButton
+                Outlined
+                OnClick="GetMore"
+                Elevation="2">
+                <MIcon>fa:fas fa-solid fa-infinity</MIcon>
+                加载更多
+            </MButton>
         </div>
     </div>
 </div>
-<!-- Modal -->
-<div class="modal fade" id="info-modal" tabindex="-1" aria-labelledby="infoModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">快捷面板</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-primary" role="alert">
-                    <i class="fa-solid fa-house"></i>
-                    您一共有<a>@_friends.Count</a>位博主朋友，订阅了<a>@_countArticle</a>篇文章
-                </div>
-            </div>
-            <div class="modal-footer" style="position:relative;">
-                <div style="position: absolute;left: 15px;">
-                    <i class="fa-brands fa-github"></i>
-                    <a target="_blank" style="color: #000000" href="https://github.com/Drizzle365/Moments">Moments</a>
-                </div>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                <a href="/admin" target="_blank" type="button" class="btn btn-primary">进入后台</a>
-            </div>
+<PModal @bind-Value="_info"
+        Title="快捷面板"
+        Width="500"
+        OnCancel="() => _info = false">
+    <MButton Depressed Link Href="/Apply" Color="success">
+        申请加入
+    </MButton>
+    <MButton Depressed Link Href="/Admin" Color="primary">
+        进入后台
+    </MButton>
+    <MButton Depressed Link Href="https://github.com/Drizzle365/Moments" Target="_blank" Color="primary">
+        <MIcon>mdi:mdi-github</MIcon>
+        开源地址
+    </MButton>
+</PModal>
+<PModal @bind-Value="_friendInfo"
+        Title="最近动态"
+        Width="500"
+        OnCancel="() => _friendInfo = false">
+    <div style="text-align: center">
+        <MAvatar Size="84">
+            <MImage Src="@_select?.Avatar" Alt="Avatar"></MImage>
+        </MAvatar>
+        <div>
+            <MChip Class="ma-2"
+                   Color="primary">
+                @_select?.Name
+            </MChip>
         </div>
     </div>
-</div>
-
-<div class="modal fade" id="friend-info-modal" tabindex="-1" aria-labelledby="infoModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">最近文章</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div style="text-align: center">
-                    <img style="border-radius: 100%;width: 100px;height: 100px" src="@_select?.Avatar" alt=""/>
-                </div>
-                <div style="text-align: center;margin-top: 5px">
-                    <span class="badge rounded-pill text-bg-primary" style="font-size: large">@_select?.Name</span>
-                </div>
-
-                <div class="list-group mt-3">
-                    @foreach (var item in _selectArticles)
-                    {
-                        <a target="_blank" href="@item.Link" class="list-group-item list-group-item-action" aria-current="true">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">@item.Title</h6>
-                                <small>@item.PubDate</small>
-                            </div>
-                            <p class="mb-1" style="font-size: smaller;color: #8c959f">@item.Description</p>
-                        </a>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <MList Subheader
+           TwoLine Elevation="0">
+        @foreach (var item in _selectArticles)
+        {
+            <MListItem Href="@item.Link" Target="_blank" Link>
+                <MListItemContent>
+                    <MListItemTitle>@item.Title</MListItemTitle>
+                    <MListItemSubtitle>@item.Description</MListItemSubtitle>
+                </MListItemContent>
+                <MListItemAction>
+                    <MChip Class="ma-2" Small>
+                        @item.PubDate.ToString("MM月dd日")
+                    </MChip>
+                </MListItemAction>
+            </MListItem>
+        }
+    </MList>
+</PModal>
 
 @code{
     long _countArticle;
-
+    bool _info;
+    bool _friendInfo;
     List<Article> _nodeList = new();
     List<Friend> _friends = new();
     int _p = 1;
     Friend? _select;
     List<Article> _selectArticles = new List<Article>();
-
 
     protected override async Task OnInitializedAsync()
     {

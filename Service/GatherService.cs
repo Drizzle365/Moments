@@ -28,7 +28,7 @@ public class GatherService
     /// <returns>采集日志</returns>
     public async void GatherRssItem(Friend target)
     {
-        var res = await GetFeed(target.Rss, target.Rule, target.FriendId);
+        var res = await GetFeed(target.Feed, target.Rule, target.FriendId);
         if (res.Count == 0)
         {
             return;

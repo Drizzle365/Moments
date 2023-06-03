@@ -2,62 +2,95 @@
 @using Moments.Model
 @using Moments.Service
 @inject IFreeSql Db
-@inject IJSRuntime JsRuntime
 @inject GatherService GatherService
-<div class="m-1">
-    <button class="btn btn-danger" @onclick="DelAll">清空数据</button>
-    <button class="btn btn-success" @onclick="Gather">一键采集</button>
-</div>
-<div>
-    <div class="list-group list-group-flush border-bottom scrollarea">
-        @foreach (var item in _nodeList)
-        {
-            <div style="cursor: pointer" @onclick="() => { _now = item; }" data-bs-toggle="modal" data-bs-target="#content" class="list-group-item list-group-item-action py-3 lh-sm">
-                <div class="d-flex w-100 align-items-center justify-content-between">
-                    <strong class="mb-1">@item.Title</strong>
-                    <small class="text-muted">
-                        @item.PubDate.ToString("MM月dd日 tt hh:mm")
-                    </small>
-                </div>
-                <div class="col-10 small mt-2">
-                    @item.FriendId
-                </div>
-            </div>
-        }
-    </div>
-    <div style="text-align: center;margin: 20px">
-        <div class="btn-group" role="group" aria-label="Basic outlined example">
-            <button type="button" class="btn btn-outline-primary" @onclick="async () => { await PutPage(_p - 1); }">上页</button>
-            <button type="button" class="btn btn-outline-primary" @onclick="async () => { await PutPage(_p + 1); }">下页</button>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="content" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">@_now.Title</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body markdown-body">
-                    @(new MarkupString(_now.Content ?? "暂无阅览，请查看全文"))
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                    <a target="_blank" href="@_now.Link" class="btn btn-primary">查看原文</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
+<MCard Color="white lighten-4 mb-2" Style="border-radius: 12px!important;padding: 6px 0;" Elevation="0"
+       Flat
+       Tile>
+    <MToolbar Dense Elevation="0">
+        <MButton class="ma-2 white--text"
+                 Color="blue-grey"
+                 OnClick="DelAll">
+            清空数据
+            <MIcon Right Dark>
+                fa:fas fa-trash
+            </MIcon>
+        </MButton>
+        <MButton class="ma-2 white--text"
+                 Color="blue-grey"
+                 OnClick="Gather">
+            一键采集
+            <MIcon Right Dark>
+                fa:fas fa-feather
+            </MIcon>
+        </MButton>
+        <MSpacer></MSpacer>
+    </MToolbar>
+</MCard>
+
+<MList Subheader
+       TwoLine Elevation="0" Style="border-radius: 20px">
+    @foreach (var item in _nodeList)
+    {
+        <MListItem OnClick="() => { _now = item;_dialog = true; }">
+            <MListItemAvatar>
+                <MImage Src="@GetAvatar(item.FriendId)"> </MImage>
+            </MListItemAvatar>
+            <MListItemContent>
+                <MListItemTitle>@item.Title</MListItemTitle>
+                <MListItemSubtitle>@item.Description</MListItemSubtitle>
+            </MListItemContent>
+            <MListItemAction>
+                <MButton Icon>
+                    <MIcon Color="grey lighten-1">mdi:mdi-information</MIcon>
+                </MButton>
+            </MListItemAction>
+        </MListItem>
+    }
+</MList>
+<div class="text-center" style="margin: 15px">
+    <MPagination ValueChanged="async Task(v) => { await PutPage(v); }"
+                 Length="_maxP"
+                 TotalVisible="7">
+    </MPagination>
+</div>
+<MRow Justify="JustifyTypes.Center">
+    <MDialog @bind-Value="_dialog"
+             Scrollable
+             MaxWidth="980">
+        <ChildContent>
+            <MCard>
+                    <MToolbar Dark
+                              Color="primary">
+                        <MButton Icon
+                                 Dark
+                                 OnClick="() => _dialog = false">
+                            <MIcon>mdi:mdi-close</MIcon>
+                        </MButton>
+                        <MToolbarTitle>@_now.Title</MToolbarTitle>
+                        <MSpacer></MSpacer>
+                        <MToolbarItems>
+                            <MButton Target="_blank" Link Href="@_now.Link">
+                                查看原文
+                            </MButton>
+                        </MToolbarItems>
+                    </MToolbar>
+                <MCardText Class="markdown-body p-4" Style="height: 800px;">
+                    @(new MarkupString(_now.Content ?? "暂无阅览，请查看全文"))
+                </MCardText >
+            </MCard>
+        </ChildContent>
+    </MDialog>
+</MRow>
 
 @code {
     List<Article> _nodeList = new();
     Article _now = new();
-    int _p = 1;
     long _count;
     int _maxP;
+    private bool _dialog;
+    List<Friend> _friends = new();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,7 +99,12 @@
         _nodeList = await Db.Select<Article>().OrderBy("PubDate DESC")
             .Limit(10)
             .ToListAsync();
-        StateHasChanged();
+        _friends = await Db.Select<Friend>().ToListAsync();
+    }
+
+    string GetAvatar(int? id)
+    {
+        return _friends.Find(x => x.FriendId == id)?.Avatar ?? "https://gravatar.loli.net/avatar/c243c9fe3d177bc3f656ff4554e4cbb0?s=100&d=mm&r=g";
     }
 
     async Task PutPage(int p)
@@ -79,7 +117,6 @@
         {
             p = _maxP;
         }
-        _p = p;
         _nodeList = await Db.Select<Article>().OrderBy("PubDate DESC")
             .Offset((p - 1) * 10)
             .Limit(10)
@@ -92,15 +129,15 @@
         await Db.Delete<Article>()
             .Where("1=1")
             .ExecuteAffrowsAsync();
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", "清空成功");
+        AdminLayout.PushSnackbars(AlertTypes.Info,"清空成功！");
         _nodeList.Clear();
     }
 
-    async Task Gather()
+     void Gather()
     {
         GatherService.GatherRssAll();
+        AdminLayout.PushSnackbars(AlertTypes.Info,"采集任务启动成功，请稍等一会刷新本页面！");
 
-        await JsRuntime.InvokeVoidAsync("toast", "提示：", "采集任务启动成功，请稍等一会刷新本页面！");
     }
 
 }

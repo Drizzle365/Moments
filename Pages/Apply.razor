@@ -22,7 +22,7 @@
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text">Feed</span>
-        <input @bind="_item.Rss" type="text" class="form-control">
+        <input @bind="_item.Feed" type="text" class="form-control">
 
         <select class="form-select" @bind="_item.Rule">
             @foreach (var item in Enum.GetNames(typeof(Rule)))
@@ -43,8 +43,8 @@
 
 @code
 {
-    readonly Friend _item = new ();
-    
+    readonly Friend _item = new();
+
     async Task Submit()
     {
         if (_item.Link is null)

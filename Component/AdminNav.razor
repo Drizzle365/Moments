@@ -1,0 +1,58 @@
+﻿<MList Nav>
+    <MListItemGroup @bind-Value="_selectedItem" Color="primary">
+        <MListItem Link Href="/Admin">
+            <MListItemIcon>
+                <MIcon Size="20">fa:fas fa-tachometer-alt</MIcon>
+            </MListItemIcon>
+            <MListItemContent>
+                <MListItemTitle>面板</MListItemTitle>
+            </MListItemContent>
+        </MListItem>
+        <MListItem Link Href="/Admin/Friends">
+            <MListItemIcon>
+                <MIcon Size="20">fa:fas fa-user-friends</MIcon>
+            </MListItemIcon>
+            <MListItemContent>
+                <MListItemTitle>朋友</MListItemTitle>
+            </MListItemContent>
+        </MListItem>
+        <MListItem Link Href="/Admin/Feed">
+            <MListItemIcon>
+                <MIcon Size="20">fa:fas fa-rss-square</MIcon>
+            </MListItemIcon>
+            <MListItemContent>
+                <MListItemTitle>订阅</MListItemTitle>
+            </MListItemContent>
+        </MListItem>
+        <MListItem Link Href="/Admin/Interface">
+            <MListItemIcon>
+                <MIcon Size="20">fa:fas fa-sitemap</MIcon>
+            </MListItemIcon>
+            <MListItemContent>
+                <MListItemTitle>接口</MListItemTitle>
+            </MListItemContent>
+        </MListItem>
+        <MListItem Link Href="/Admin/Config">
+            <MListItemIcon>
+                <MIcon Size="20">fa:fas fa-cog</MIcon>
+            </MListItemIcon>
+            <MListItemContent>
+                <MListItemTitle>设置</MListItemTitle>
+            </MListItemContent>
+        </MListItem>
+        <MListItem Link Href="/Admin/About">
+            <MListItemIcon>
+                <MIcon Size="20">fa:fas fa-info-circle</MIcon>
+            </MListItemIcon>
+            <MListItemContent>
+                <MListItemTitle>关于</MListItemTitle>
+            </MListItemContent>
+        </MListItem>
+    </MListItemGroup>
+
+</MList>
+
+@code{
+    StringNumber _selectedItem = 0;
+
+}

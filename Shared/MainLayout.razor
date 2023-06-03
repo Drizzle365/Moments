@@ -2,6 +2,8 @@
 @inherits LayoutComponentBase
 @inject ConfigService ConfigService
 <PageTitle>@ConfigService.Get("Title")</PageTitle>
-<div class="main">
-    @Body
-</div>
+<MApp>
+    <div class="main">
+        @Body
+    </div>
+</MApp>

@@ -22,12 +22,13 @@ public class ArticleService
     {
         return friendId is not null
             ? await _db.Select<Article>()
-                .Where(x => x.FriendId == friendId)
+                .Where((a) => a.FriendId == friendId)
                 .OrderBy("PubDate DESC")
                 .Offset((page - 1) * size)
                 .Limit(size)
                 .ToListAsync()
-            : await _db.Select<Article>()
+            : await _db.Select<Article, Friend>()
+                .LeftJoin((a, b) => a.FriendId == b.FriendId)
                 .OrderBy("PubDate DESC")
                 .Offset((page - 1) * size)
                 .Limit(size)

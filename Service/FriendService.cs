@@ -134,7 +134,7 @@ public class FriendService
             }
 
             var temp = await target.VerifyUrl.GetStringAsync();
-            if (temp.IndexOf(_configService.Get("Origin"), StringComparison.Ordinal) != -1)
+            if (temp.IndexOf(_configService.Get("Blog"), StringComparison.Ordinal) != -1)
             {
                 await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId).Set(x => x.Verify, FriendState.正常)
                     .ExecuteAffrowsAsync();
@@ -181,7 +181,7 @@ public class FriendService
         {
             await writer.WriteLineAsync(
                 $"{item.Name},{item.Avatar},{item.Info}," +
-                $"{item.Email},{item.Link},{item.Rss}," +
+                $"{item.Email},{item.Link},{item.Feed}," +
                 $"{item.Rule},{item.VerifyUrl},{item.Verify},{item.Visible}"
             );
         }
@@ -206,7 +206,7 @@ public class FriendService
             string info = (data[2]);
             string email = (data[3]);
             string link = (data[4]);
-            string rss = (data[5]);
+            string feed = (data[5]);
             Rule rule = (Rule)Enum.Parse(typeof(Rule), data[6]);
             string verifyUrl = (data[7]);
             FriendState verify = (FriendState)Enum.Parse(typeof(FriendState), data[8]);
@@ -218,7 +218,7 @@ public class FriendService
                 Info = info,
                 Email = email,
                 Link = link,
-                Rss = rss,
+                Feed = feed,
                 Rule = rule,
                 VerifyUrl = verifyUrl,
                 Verify = verify,

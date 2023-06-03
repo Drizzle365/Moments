@@ -1,33 +1,64 @@
 ﻿@using Moments.Service
-@inherits LayoutComponentBase
 @inject ConfigService ConfigService
+@inherits LayoutComponentBase
 <PageTitle>@ConfigService.Get("Title")</PageTitle>
-<AuthorizeView Roles="Admin">
-    <Authorized>
-        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-            <ul class="nav mb-1">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="/Admin">仪表盘</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="/Admin/Friends">朋友们</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="/Admin/Feed">Feed</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="/Admin/Config">配置</a>
-                </li>
-            </ul>
-        </header>
-        <div class="container" style="margin-top: 20px">
-            @Body
-        </div>
-    </Authorized>
-    <Authorizing>
-        正在获取登录态
-    </Authorizing>
-    <NotAuthorized>
-        <Login></Login>
-    </NotAuthorized>
-</AuthorizeView>
+
+<MApp>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div style="background: #f0f3fa;min-height: 100vh;">
+                <MNavigationDrawer App Style="border: none" @bind-Value="_drawer">
+                    <MListItem Href="/">
+                        <MListItemContent>
+                            <MImage Src="/logo.png"></MImage>
+                        </MListItemContent>
+                    </MListItem>
+                    <MDivider></MDivider>
+                    <AdminNav></AdminNav>
+                </MNavigationDrawer>
+                <MAppBar App Color="white" Elevation="0" Style="border-radius: 0 0 25px 25px;margin:0 20px">
+                    <MAppBarNavIcon @onclick="() => _drawer = !_drawer"></MAppBarNavIcon>
+                    <MToolbarTitle>相逢一醉是前缘，风雨散、飘然何处。</MToolbarTitle>
+                    <MSpacer></MSpacer>
+                    <MButton icon>
+                        <a href="https://github.com/Drizzle365/Moments" target="_blank">
+                            <MIcon Color="black">mdi:mdi-github</MIcon>
+                        </a>
+                    </MButton>
+                </MAppBar>
+                <MMain>
+                    <div style="width:100%;padding: 20px">
+                        @Body
+                    </div>
+                </MMain>
+            </div>
+        </Authorized>
+        <Authorizing>
+            正在获取登录态
+        </Authorizing>
+        <NotAuthorized>
+            <Login></Login>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    <PEnqueuedSnackbars @ref="_enqueuedSnackbars"></PEnqueuedSnackbars>
+
+</MApp>
+
+
+@code{
+    private bool _drawer = true;
+    private static PEnqueuedSnackbars? _enqueuedSnackbars;
+
+    public static void PushSnackbars(AlertTypes type, string content)
+    {
+        _enqueuedSnackbars?.EnqueueSnackbar(new SnackbarOptions()
+        {
+            Content = content,
+            Type = type,
+            Closeable = true
+        });
+    }
+
+
+}
