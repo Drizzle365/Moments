@@ -45,6 +45,6 @@ public class ApiController : ControllerBase
     [HttpGet("articles")]
     public async Task<ActionResult<object>> Articles(int? friendId = null, int page = 1, int size = 10)
     {
-        return await _articleService.ListAsync(friendId, page, size);
+        return await _articleService.FriendWithArticle(friendId, page, size);
     }
 }

@@ -28,6 +28,19 @@ public class FriendService
     }
 
     /// <summary>
+    /// 异步获取朋友总数
+    /// </summary>
+    /// <param name="isVis">筛选可见性</param>
+    /// <returns></returns>
+    public async Task<long> CountAsync(bool? isVis = null)
+    {
+        return isVis is not null
+            ? await _db.Select<Friend>().Where(x => x.Visible == isVis).CountAsync()
+            : await _db.Select<Friend>().CountAsync();
+    }
+
+
+    /// <summary>
     /// 获取一个朋友
     /// </summary>
     /// <param name="exp">过滤表达式</param>
@@ -87,6 +100,7 @@ public class FriendService
             .ExecuteAffrows();
         return rows > 0;
     }
+
     /// <summary>
     /// 删除朋友
     /// </summary>
@@ -99,6 +113,7 @@ public class FriendService
             .ExecuteAffrows();
         return rows > 0;
     }
+
     /// <summary>
     /// 清空数据表
     /// </summary>
@@ -110,7 +125,7 @@ public class FriendService
             .ExecuteAffrows();
         return rows;
     }
-    
+
 
     /// <summary>
     /// 设置朋友的可见性

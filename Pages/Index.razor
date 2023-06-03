@@ -1,10 +1,10 @@
 ﻿@page "/"
 @using Moments.Model
 @using Moments.Service
-@inject IFreeSql Db;
 @inject IJSRuntime JsRuntime
 @inject ArticleService ArticleService
 @inject ConfigService ConfigService
+@inject FriendService FriendService
 <div id="main">
     <div class="main-content">
         <div class="header">
@@ -124,15 +124,13 @@
     List<Friend> _friends = new();
     int _p = 1;
     Friend? _select;
-    List<Article> _selectArticles = new List<Article>();
+    List<Article> _selectArticles = new();
 
     protected override async Task OnInitializedAsync()
     {
-        _countArticle = await Db.Select<Article>().CountAsync();
-        _nodeList = await Db.Select<Article>().OrderBy("PubDate DESC")
-            .Limit(10)
-            .ToListAsync();
-        _friends = await Db.Select<Friend>().ToListAsync();
+        _countArticle = await ArticleService.CountAsync();
+        _nodeList = await ArticleService.ListAsync();
+        _friends = await FriendService.ListAsync();
     }
 
     string GetName(int? id)
@@ -147,12 +145,10 @@
 
     async Task GetMore()
     {
-        var more = await Db.Select<Article>().OrderBy("PubDate DESC")
-            .Offset(_p * 10)
-            .Limit(10)
-            .ToListAsync();
-        _nodeList.AddRange(more);
         _p++;
+        var more = await ArticleService.ListAsync(page:_p);
+        Console.WriteLine(more.Count);
+        _nodeList.AddRange(more);
     }
 
     async Task Select(int target)

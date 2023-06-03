@@ -2,11 +2,11 @@
 
 namespace Moments;
 
-public class Utils
+public abstract class Utils
 {
-    public static Dictionary<string, object> ObjectToDictionary(object obj)
+    public static Dictionary<string, string?> ObjectToDictionary(object obj)
     {
-        var dictionary = new Dictionary<string, object>();
+        var dictionary = new Dictionary<string, string?>();
 
         PropertyInfo[] properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -15,7 +15,7 @@ public class Utils
             string propertyName = property.Name;
             object? propertyValue = property.GetValue(obj);
 
-            if (propertyValue != null) dictionary.Add(propertyName, propertyValue);
+            if (propertyValue != null) dictionary.Add(propertyName, propertyValue.ToString());
         }
 
         return dictionary;
