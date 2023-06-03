@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Flurl.Http;
 using Moments.Model;
 
 namespace Moments.Service;
@@ -10,12 +9,10 @@ namespace Moments.Service;
 public class FriendService
 {
     private readonly IFreeSql _db;
-    private readonly ConfigService _configService;
 
-    public FriendService(IFreeSql db, ConfigService configService)
+    public FriendService(IFreeSql db)
     {
         _db = db;
-        _configService = configService;
     }
 
     /// <summary>
@@ -113,41 +110,7 @@ public class FriendService
             .ExecuteAffrows();
         return rows;
     }
-
-    /// <summary>
-    /// 验证朋友站点是否存在本站链接
-    /// </summary>
-    /// <param name="target"></param>
-    public async Task<bool> VerifyItem(Friend target)
-    {
-        if (target.VerifyUrl is not null)
-        {
-            try
-            {
-                await target.VerifyUrl.GetStringAsync();
-            }
-            catch
-            {
-                await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId)
-                    .Set(x => x.Verify, FriendState.无法访问).ExecuteAffrowsAsync();
-                return false;
-            }
-
-            var temp = await target.VerifyUrl.GetStringAsync();
-            if (temp.IndexOf(_configService.Get("Blog"), StringComparison.Ordinal) != -1)
-            {
-                await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId).Set(x => x.Verify, FriendState.正常)
-                    .ExecuteAffrowsAsync();
-                return true;
-            }
-
-            await _db.Update<Friend>().Where(x => x.FriendId == target.FriendId).Set(x => x.Verify, FriendState.失链)
-                .ExecuteAffrowsAsync();
-            return false;
-        }
-
-        return false;
-    }
+    
 
     /// <summary>
     /// 设置朋友的可见性
@@ -182,7 +145,7 @@ public class FriendService
             await writer.WriteLineAsync(
                 $"{item.Name},{item.Avatar},{item.Info}," +
                 $"{item.Email},{item.Link},{item.Feed}," +
-                $"{item.Rule},{item.VerifyUrl},{item.Verify},{item.Visible}"
+                $"{item.Rule},{item.Visible}"
             );
         }
 
@@ -208,8 +171,6 @@ public class FriendService
             string link = (data[4]);
             string feed = (data[5]);
             Rule rule = (Rule)Enum.Parse(typeof(Rule), data[6]);
-            string verifyUrl = (data[7]);
-            FriendState verify = (FriendState)Enum.Parse(typeof(FriendState), data[8]);
             bool visible = bool.Parse(data[9]);
             Friend friend = new Friend
             {
@@ -220,8 +181,6 @@ public class FriendService
                 Link = link,
                 Feed = feed,
                 Rule = rule,
-                VerifyUrl = verifyUrl,
-                Verify = verify,
                 Visible = visible
             };
             friends.Add(friend);

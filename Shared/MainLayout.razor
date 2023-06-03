@@ -6,4 +6,22 @@
     <div class="main">
         @Body
     </div>
+    <PEnqueuedSnackbars @ref="_enqueuedSnackbars"></PEnqueuedSnackbars>
+
 </MApp>
+
+@code{
+    private static PEnqueuedSnackbars? _enqueuedSnackbars;
+
+    public static void PushSnackbars(AlertTypes type, string content)
+    {
+        _enqueuedSnackbars?.EnqueueSnackbar(new SnackbarOptions()
+        {
+            Content = content,
+            Type = type,
+            Closeable = true
+        });
+    }
+
+
+}

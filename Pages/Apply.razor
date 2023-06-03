@@ -2,64 +2,95 @@
 @using Moments.Service
 @using Moments.Model
 @inject FriendService FriendService
-@inject IJSRuntime JsRuntime
-<div style="text-align: center;padding: 20px">
-    <div class="input-group mb-3">
-        <span class="input-group-text">标题*</span>
-        <input @bind="_item.Name" type="text" class="form-control">
-    </div>
-    <div class="input-group mb-3">
-        <span class="input-group-text">简介</span>
-        <input @bind="_item.Info" type="text" class="form-control">
-    </div>
-    <div class="input-group mb-3">
-        <span class="input-group-text">LOGO</span>
-        <input @bind="_item.Avatar" type="text" class="form-control">
-    </div>
-    <div class="input-group mb-3">
-        <span class="input-group-text">链接*</span>
-        <input @bind="_item.Link" type="text" class="form-control">
-    </div>
-    <div class="input-group mb-3">
-        <span class="input-group-text">Feed</span>
-        <input @bind="_item.Feed" type="text" class="form-control">
+<div style="padding: 20px">
+    <MCard
+        Elevation="2">
+        <MCardTitle>加入我的朋友圈</MCardTitle>
+        <MCardText>
+            加入之前请先添加本站的博客为友链，需要满足一定的要求：
+            查看：<a href="https://dearain.cn/links" target="_blank">https://dearain.cn/links</a>
+            <MRow>
+                <MCol Cols="12">
+                    <MTextField @bind-Value="_item.Name"
+                                Label="博主名称*"
+                                Dense
+                                Outlined
+                                HideDetails="@("auto")"/>
+                </MCol>
+                <MCol Cols="12">
+                    <MTextField @bind-Value="_item.Avatar"
+                                Label="头像"
+                                Dense
+                                Outlined
+                                HideDetails="@("auto")"/>
+                </MCol>
+                <MCol Cols="12">
+                    <MTextField @bind-Value="_item.Info"
+                                Label="简介"
+                                Dense
+                                Outlined
+                                HideDetails="@("auto")"/>
+                </MCol>
+                <MCol Cols="12">
+                    <MTextField @bind-Value="_item.Email"
+                                Label="邮箱"
+                                Dense
+                                Outlined
+                                HideDetails="@("auto")"/>
+                </MCol>
+                <MCol Cols="12">
+                    <MTextField @bind-Value="_item.Link"
+                                Label="链接*"
+                                Dense
+                                Outlined
+                                HideDetails="@("auto")"/>
+                </MCol>
+                <MCol Cols="12">
+                    <MSelect Items="Enum.GetNames(typeof(Rule))"
+                             @bind-Value="@_item.Rule"
+                             ItemText="u => u"
+                             ItemValue="u => (Rule)Enum.Parse(typeof(Rule), u)"
+                             Label="规则"
+                             Dense
+                             HideDetails="@("auto")"
+                             Outlined>
+                    </MSelect>
+                </MCol>
+                <MCol Cols="12">
+                    <MTextField @bind-Value="_item.Feed"
+                                Label="Feed"
+                                Dense
+                                Outlined
+                                HideDetails="@("auto")"/>
+                </MCol>
+            </MRow>
+        </MCardText>
+        <MCardActions>
+            <MButton OnClick="Submit">提交</MButton>
+        </MCardActions>
+    </MCard>
 
-        <select class="form-select" @bind="_item.Rule">
-            @foreach (var item in Enum.GetNames(typeof(Rule)))
-            {
-                <option value="@item">@item</option>
-            }
-        </select>
-
-    </div>
-
-    <div class="input-group mb-3">
-        <span class="input-group-text">验证链接</span>
-        <input @bind="_item.VerifyUrl" type="text" class="form-control">
-    </div>
-    <div class="form-text">验证链接可以填写您的站点的收录本站的内页地址</div>
-    <button class="mt-5 btn btn-primary" @onclick="Submit">申请</button>
 </div>
 
 @code
 {
     readonly Friend _item = new();
 
-    async Task Submit()
+    void Submit()
     {
-        if (_item.Link is null)
+        if (_item.Link is null || _item.Name is null)
         {
-            await JsRuntime.InvokeVoidAsync("alert", "请填写带*的必填项目！");
+            MainLayout.PushSnackbars(AlertTypes.Warning, "请填写带*号的必填项！");
             return;
         }
         var temp = FriendService.First(x => x.Link == _item.Link);
         if (temp is not null)
         {
-            await JsRuntime.InvokeVoidAsync("alert", "请勿重复提交！");
+            MainLayout.PushSnackbars(AlertTypes.Error, "请勿重复提交！");
             return;
         }
         _item.Visible = false;
         FriendService.Add(_item);
-        await JsRuntime.InvokeVoidAsync("alert", "提交申请成功！");
+        MainLayout.PushSnackbars(AlertTypes.Success, "申请成功！");
     }
 }

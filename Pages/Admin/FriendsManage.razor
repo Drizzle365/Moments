@@ -19,14 +19,6 @@
         </MButton>
         <MButton class="ma-2 white--text"
                  Color="blue-grey"
-                 OnClick="Check">
-            验证状态
-            <MIcon Right Dark>
-                fa:fas fa-check-square
-            </MIcon>
-        </MButton>
-        <MButton class="ma-2 white--text"
-                 Color="blue-grey"
                  OnClick="Clear">
             清空数据
             <MIcon Right Dark>
@@ -148,13 +140,7 @@
                                     Label="链接">
                         </MTextField>
                     </MCol>
-                    <MCol Cols="12"
-                          Sm="12"
-                          Md="12">
-                        <MTextField @bind-Value="_editedItem.VerifyUrl"
-                                    Label="验证地址">
-                        </MTextField>
-                    </MCol>
+                    
                     <MCol Cols="12"
                           Sm="12"
                           Md="12">
@@ -213,8 +199,8 @@
     {
         new() { Text = "昵称", Value = nameof(Friend.Name) },
         new() { Text = "可见性", Value = nameof(Friend.Visible) },
-        new() { Text = "状态", Value = nameof(Friend.Verify) },
         new() { Text = "链接", Value = nameof(Friend.Link) },
+        new() { Text = "Feed", Value = nameof(Friend.Feed) },
         new() { Text = "操作", Value = "actions", Sortable = false, Width = "100px", Align = DataTableHeaderAlign.Center, }
     };
 
@@ -328,13 +314,7 @@
                         HideDetails="@("auto")"/>
         </MCol>
 
-        <MCol Cols="12">
-            <MTextField @bind-Value="_add.VerifyUrl"
-                        Label="验证"
-                        Dense
-                        Outlined
-                        HideDetails="@("auto")"/>
-        </MCol>
+        
     </MRow>
 </PModal>
 
@@ -363,16 +343,7 @@
         AdminLayout.PushSnackbars(AlertTypes.Info, item.Name + ": 采集成功！");
     }
 
-    void Check()
-    {
-        foreach (var item in _friends)
-        {
-#pragma warning disable CS4014
-            FriendService.VerifyItem(item);
-#pragma warning restore CS4014
-        }
-        AdminLayout.PushSnackbars(AlertTypes.Info, "状态检测中，请等待1分钟后刷新本页面！");
-    }
+   
 
     async Task SwitchVis(Friend item)
     {
