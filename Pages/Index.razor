@@ -24,7 +24,7 @@
                     </div>
                 </span>
             </div>
-            <img class="img-fluid" style="height: 345px" src="@ConfigService.Get("Banner")" alt="">
+            <MImage src="@ConfigService.Get("Banner")" alt=""/>
             <div class="profile">
                 <div id="name">@ConfigService.Get("Name")</div>
                 <img src="@ConfigService.Get("Avatar")" alt="头像">
@@ -41,7 +41,7 @@
                         </div>
                         <div class="right">
                             <div class="name">
-                                <a style="color: #576b95" href="@GetBlogLink(item.FriendId)" target="_blank">@GetName(item.FriendId)</a>
+                                <span style="color: #576b95" @onclick="() => {Task.FromResult(Select(item.FriendId)); _friendInfo = true;}">@GetName(item.FriendId)</span>
                             </div>
                             <div class="content">
                                 <b>@item.Title</b>
@@ -71,7 +71,7 @@
         Title="快捷面板"
         Width="500"
         OnCancel="() => _info = false">
-    <MButton Depressed Link Href="/Apply" Color="success">
+    <MButton Depressed Link Href="/Apply" Target="_blank" Color="success">
         申请加入
     </MButton>
     <MButton Depressed Link Href="/Admin" Color="primary">
@@ -107,7 +107,7 @@
                     <MListItemSubtitle>@item.Description</MListItemSubtitle>
                 </MListItemContent>
                 <MListItemAction>
-                    <MChip Class="ma-2" Small>
+                    <MChip Small>
                         @item.PubDate.ToString("MM月dd日")
                     </MChip>
                 </MListItemAction>
@@ -143,11 +143,6 @@
     string GetAvatar(int? id)
     {
         return _friends.Find(x => x.FriendId == id)?.Avatar ?? "https://gravatar.loli.net/avatar/c243c9fe3d177bc3f656ff4554e4cbb0?s=100&d=mm&r=g";
-    }
-
-    string GetBlogLink(int? id)
-    {
-        return _friends.Find(x => x.FriendId == id)?.Link ?? "https://dearain.cn";
     }
 
     async Task GetMore()

@@ -1,4 +1,6 @@
-﻿<MList Nav>
+﻿@using Moments.Service
+@inject CustomAuthenticationStateProvider CustomAuthenticationStateProvider
+<MList Nav>
     <MListItemGroup @bind-Value="_selectedItem" Color="primary">
         <MListItem Link Href="/Admin">
             <MListItemIcon>
@@ -48,6 +50,15 @@
                 <MListItemTitle>关于</MListItemTitle>
             </MListItemContent>
         </MListItem>
+        <MListItem OnClick="CustomAuthenticationStateProvider.LogOut">
+            <MListItemIcon>
+                <MIcon Size="20">fa:fas fa-sign-out-alt</MIcon>
+            </MListItemIcon>
+            <MListItemContent>
+                <MListItemTitle>注销</MListItemTitle>
+            </MListItemContent>
+        </MListItem>
+        
     </MListItemGroup>
 
 </MList>

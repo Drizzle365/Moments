@@ -56,11 +56,12 @@
         @if (context.Header.Value == "actions")
         {
             <MIcon Small
+                   Class="mr-1"
                    OnClick="() => GatherItem(context.Item)">
                 mdi:mdi-rss
             </MIcon>
             <MIcon Small
-                   Class="mr-2"
+                   Class="mr-1"
                    OnClick="() => EditItem(context.Item)">
                 mdi:mdi-pencil
             </MIcon>

@@ -2,11 +2,16 @@
 @using Moments.Model
 @inject ConfigService ConfigService
 @inject CustomAuthenticationStateProvider CustomAuthenticationStateProvider 
-@inject IJSRuntime Js
-<div class="m-3">
-    <input placeholder="请输入密钥" type="password" class="form-control mb-2" @bind="_passWord">
-    <button class="btn btn-success" @onclick="Submit">登录</button>
-</div>
+
+<MCard Class="mx-auto ma-5" Width="350" Outlined>
+    <MCardTitle>
+        Moments Admin 👋
+    </MCardTitle>
+    <MCardSubtitle>
+        <MTextField Label="密钥" @bind-Value="_passWord" Outlined></MTextField>
+        <MButton Color="orange lighten-2" OnClick="Submit">登录</MButton>
+    </MCardSubtitle>
+</MCard>
 
 @code {
     string? _passWord;
@@ -24,7 +29,7 @@
         }
         else
         {
-            await Js.InvokeVoidAsync("alert", "密钥错误");
+            AdminLayout.PushSnackbars(AlertTypes.Error, "密钥错误！");
         }
     }
 

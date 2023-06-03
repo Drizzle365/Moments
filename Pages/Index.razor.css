@@ -57,6 +57,7 @@ a {
     width: 100%;
     max-width: 550px;
     background-color: rgba(0, 0, 0, 0.16);
+    z-index: 100;
 }
 
 .header .scrolled {

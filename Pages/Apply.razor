@@ -2,74 +2,85 @@
 @using Moments.Service
 @using Moments.Model
 @inject FriendService FriendService
-<div style="padding: 20px">
-    <MCard
-        Elevation="2">
-        <MCardTitle>加入我的朋友圈</MCardTitle>
-        <MCardText>
-            加入之前请先添加本站的博客为友链，需要满足一定的要求：
-            查看：<a href="https://dearain.cn/links" target="_blank">https://dearain.cn/links</a>
-            <MRow>
-                <MCol Cols="12">
-                    <MTextField @bind-Value="_item.Name"
-                                Label="博主名称*"
-                                Dense
-                                Outlined
-                                HideDetails="@("auto")"/>
-                </MCol>
-                <MCol Cols="12">
-                    <MTextField @bind-Value="_item.Avatar"
-                                Label="头像"
-                                Dense
-                                Outlined
-                                HideDetails="@("auto")"/>
-                </MCol>
-                <MCol Cols="12">
-                    <MTextField @bind-Value="_item.Info"
-                                Label="简介"
-                                Dense
-                                Outlined
-                                HideDetails="@("auto")"/>
-                </MCol>
-                <MCol Cols="12">
-                    <MTextField @bind-Value="_item.Email"
-                                Label="邮箱"
-                                Dense
-                                Outlined
-                                HideDetails="@("auto")"/>
-                </MCol>
-                <MCol Cols="12">
-                    <MTextField @bind-Value="_item.Link"
-                                Label="链接*"
-                                Dense
-                                Outlined
-                                HideDetails="@("auto")"/>
-                </MCol>
-                <MCol Cols="12">
-                    <MSelect Items="Enum.GetNames(typeof(Rule))"
-                             @bind-Value="@_item.Rule"
-                             ItemText="u => u"
-                             ItemValue="u => (Rule)Enum.Parse(typeof(Rule), u)"
-                             Label="规则"
-                             Dense
-                             HideDetails="@("auto")"
-                             Outlined>
-                    </MSelect>
-                </MCol>
-                <MCol Cols="12">
-                    <MTextField @bind-Value="_item.Feed"
-                                Label="Feed"
-                                Dense
-                                Outlined
-                                HideDetails="@("auto")"/>
-                </MCol>
-            </MRow>
-        </MCardText>
-        <MCardActions>
-            <MButton OnClick="Submit">提交</MButton>
-        </MCardActions>
-    </MCard>
-
+<div style="margin: 25px;">
+    <MRow >
+        <MCol Cols="12" Sm="6" Md="6" Lg="6" Xl="6">
+            <MCard Class="mx-auto" Color="#26c6da" Dark>
+                <MCardTitle>
+                    <span class="text-h6 font-weight-light">友链须知</span>
+                </MCardTitle>
+                <MCardText Class="text-h5 font-weight-bold">
+                    "这是博客云烟成雨(dearain.cn)的朋友圈，申请加入前请在您的站点加入博客链接：https://dearain.cn"
+                </MCardText>
+            </MCard>
+        </MCol>
+        <MCol Cols="12" Sm="6" Md="6" Lg="6" Xl="6">
+            <MCard
+                Class="mx-auto" Color="#26c6da" Dark>
+                <MCardTitle>申请加入</MCardTitle>
+                <MCardText>
+                    <MRow>
+                        <MCol Cols="12">
+                            <MTextField @bind-Value="_item.Name"
+                                        Label="博主名称*"
+                                        Dense
+                                        Outlined
+                                        HideDetails="@("auto")"/>
+                        </MCol>
+                        <MCol Cols="12">
+                            <MTextField @bind-Value="_item.Avatar"
+                                        Label="头像"
+                                        Dense
+                                        Outlined
+                                        HideDetails="@("auto")"/>
+                        </MCol>
+                        <MCol Cols="12">
+                            <MTextField @bind-Value="_item.Info"
+                                        Label="简介"
+                                        Dense
+                                        Outlined
+                                        HideDetails="@("auto")"/>
+                        </MCol>
+                        <MCol Cols="12">
+                            <MTextField @bind-Value="_item.Email"
+                                        Label="邮箱"
+                                        Dense
+                                        Outlined
+                                        HideDetails="@("auto")"/>
+                        </MCol>
+                        <MCol Cols="12">
+                            <MTextField @bind-Value="_item.Link"
+                                        Label="链接*"
+                                        Dense
+                                        Outlined
+                                        HideDetails="@("auto")"/>
+                        </MCol>
+                        <MCol Cols="12">
+                            <MSelect Items="Enum.GetNames(typeof(Rule))"
+                                     @bind-Value="@_item.Rule"
+                                     ItemText="u => u"
+                                     ItemValue="u => (Rule)Enum.Parse(typeof(Rule), u)"
+                                     Label="规则"
+                                     Dense
+                                     HideDetails="@("auto")"
+                                     Outlined>
+                            </MSelect>
+                        </MCol>
+                        <MCol Cols="12">
+                            <MTextField @bind-Value="_item.Feed"
+                                        Label="Feed"
+                                        Dense
+                                        Outlined
+                                        HideDetails="@("auto")"/>
+                        </MCol>
+                    </MRow>
+                </MCardText>
+                <MCardActions>
+                    <MButton OnClick="Submit">提交</MButton>
+                </MCardActions>
+            </MCard>
+        </MCol>
+    </MRow>
 </div>
 
 @code

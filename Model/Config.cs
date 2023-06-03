@@ -4,6 +4,8 @@ namespace Moments.Model;
 
 public class Config
 {
-    [Column(IsPrimary = true)] public string Key { get; set; }
-    public string? Value { get; set; }
+#pragma warning disable CS8618
+    [Column(IsPrimary = true)] public string Key { get; init; }
+#pragma warning restore CS8618
+    public string? Value { get; init; }
 }
