@@ -367,6 +367,8 @@
     async Task Import(InputFileChangeEventArgs e)
     {
         var file = e.GetMultipleFiles().First();
+        Console.WriteLine(file.Size);
+
         await FriendService.Import(file.OpenReadStream());
         AdminLayout.PushSnackbars(AlertTypes.Info, "导入成功，请刷新查看！");
     }

@@ -180,18 +180,18 @@ public class FriendService
         {
             string[] data = line.Split(',');
             string name = data[0];
-            string avatar = (data[1]);
-            string info = (data[2]);
-            string email = (data[3]);
-            string link = (data[4]);
-            string feed = (data[5]);
+            string? avatar = data[1].Length == 0 ? null : data[1];
+            string description = data[2];
+            string email = data[3];
+            string link = data[4];
+            string feed = data[5];
             Rule rule = (Rule)Enum.Parse(typeof(Rule), data[6]);
-            bool visible = bool.Parse(data[9]);
+            bool visible = bool.Parse(data[7]);
             Friend friend = new Friend
             {
                 Name = name,
                 Avatar = avatar,
-                Description = info,
+                Description = description,
                 Email = email,
                 Link = link,
                 Feed = feed,
