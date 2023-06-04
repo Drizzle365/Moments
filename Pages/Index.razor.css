@@ -7,18 +7,6 @@ a {
     text-decoration: none;
 }
 
-@font-face {
-    font-family: HarmonyOS_Sans_SC_Medium;
-    font-style: normal;
-    font-display: swap;
-    src: url('/HarmonyOS_Sans_medium.woff2') format('woff2'),
-    url('/HarmonyOS_Sans_regular.woff2') format('woff');
-}
-
-* {
-    font-family: HarmonyOS_Sans_SC_Medium, system-ui;
-}
-
 @keyframes fade {
     0% {
         opacity: 0

@@ -1,5 +1,5 @@
 <div align="center">
-<img src="./wwwroot/character.png" alt="Logo" style="width:96px">
+<img src="./wwwroot/img/character.png" alt="Logo" style="width:96px">
 
 # Moments
 构建博友们的朋友圈 —— 连接你我，创造价值
@@ -73,4 +73,4 @@ drizzle2001/moments
 
 ## 展示
 
-![display.jpg](wwwroot/display.jpg)
+![display.jpg](wwwroot/img/display.jpg)

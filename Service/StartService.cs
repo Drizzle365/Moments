@@ -57,7 +57,7 @@ public class StartService
             .AppendData(new Config { Key = "Sentence", Value = "天行健，君子以自强不息。" })
             .ExecuteAffrows();
         _db.Insert<Config>()
-            .AppendData(new Config { Key = "Banner", Value = "header.jpg" })
+            .AppendData(new Config { Key = "Banner", Value = "/img/header.jpg" })
             .ExecuteAffrows();
         _logger.LogInformation("初始化配置数据完成");
         _logger.LogInformation("数据库结构迁移完成");
