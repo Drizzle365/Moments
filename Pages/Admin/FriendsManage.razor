@@ -28,7 +28,7 @@
         <MSpacer></MSpacer>
         <MButton class="ma-2 white--text"
                  Color="blue-grey"
-                 OnClick="async Task() => { await Export();}">
+                 OnClick="async Task() => { await Export(); }">
             导出数据
             <MIcon Right Dark>
                 fa:fas fa-download
@@ -95,7 +95,7 @@
                     <MCol Cols="12"
                           Sm="4"
                           Md="4">
-                        <MTextField @bind-Value="_editedItem.Info"
+                        <MTextField @bind-Value="_editedItem.Description"
                                     Label="简介">
                         </MTextField>
                     </MCol>
@@ -141,7 +141,7 @@
                                     Label="链接">
                         </MTextField>
                     </MCol>
-                    
+
                     <MCol Cols="12"
                           Sm="12"
                           Md="12">
@@ -276,7 +276,7 @@
                         HideDetails="@("auto")"/>
         </MCol>
         <MCol Cols="12">
-            <MTextField @bind-Value="_add.Info"
+            <MTextField @bind-Value="_add.Description"
                         Label="简介"
                         Dense
                         Outlined
@@ -314,8 +314,12 @@
                         Outlined
                         HideDetails="@("auto")"/>
         </MCol>
+        <MCol>
+            <MButton OnClick="GetSiteInfo">
+                根据Feed获取信息
+            </MButton>
+        </MCol>
 
-        
     </MRow>
 </PModal>
 
@@ -344,7 +348,6 @@
         AdminLayout.PushSnackbars(AlertTypes.Info, item.Name + ": 采集成功！");
     }
 
-   
 
     async Task SwitchVis(Friend item)
     {
@@ -358,7 +361,7 @@
         AdminLayout.PushSnackbars(AlertTypes.Info, "正在导出数据中，请稍后···");
         var path = await FriendService.Export();
         AdminLayout.PushSnackbars(AlertTypes.Info, "数据导出成功,即将下载！");
-        NavigationManager.NavigateTo(path,true);
+        NavigationManager.NavigateTo(path, true);
     }
 
     async Task Import(InputFileChangeEventArgs e)
@@ -372,6 +375,27 @@
     {
         FriendService.DelAll();
         AdminLayout.PushSnackbars(AlertTypes.Info, "清空数据成功，请刷新！");
+    }
+
+    async Task GetSiteInfo()
+    {
+        if (_add.Feed is null)
+        {
+            AdminLayout.PushSnackbars(AlertTypes.Error, "请先填写Feed链接！");
+            return;
+        }
+        var siteInfo = await GatherService.GetRssSiteInfo(_add.Feed);
+        _add.Name = siteInfo["title"];
+        if (siteInfo["link"] is null || siteInfo["link"]?.Length == 0)
+        {
+            _add.Link = siteInfo["id"];
+            _add.Description = siteInfo["subtitle"];
+        }
+        else
+        {
+            _add.Link = siteInfo["link"];
+            _add.Description = siteInfo["description"];
+        }
     }
 
 }

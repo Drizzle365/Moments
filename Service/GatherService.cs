@@ -192,4 +192,42 @@ public class GatherService
 
         return html.Trim();
     }
+
+    public async Task<Dictionary<string, string?>> GetRssSiteInfo(string? url)
+    {
+        if (url is null)
+        {
+            return new();
+        }
+        var xmlDoc = new XmlDocument();
+        try
+        {
+            var html = await url.GetStringAsync();
+            xmlDoc.LoadXml(html);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.ToString());
+        }
+
+        var title = xmlDoc.GetElementsByTagName("title");
+        var link = xmlDoc.GetElementsByTagName("link");
+        var id = xmlDoc.GetElementsByTagName("id");
+        var description = xmlDoc.GetElementsByTagName("description");
+        var subtitle = xmlDoc.GetElementsByTagName("subtitle");
+        var dic = new Dictionary<string, string?>
+        {
+            { "title", title[0]?.InnerText },
+            { "link", link[0]?.InnerText },
+            { "id", id[0]?.InnerText },
+            { "description", description[0]?.InnerText },
+            { "subtitle", subtitle[0]?.InnerText }
+        };
+        Console.WriteLine(title[0]?.InnerText);
+        Console.WriteLine(link[0]?.InnerText);
+        Console.WriteLine(id[0]?.InnerText);
+        Console.WriteLine(description[0]?.InnerText);
+        Console.WriteLine(subtitle[0]?.InnerText);
+        return dic;
+    }
 }

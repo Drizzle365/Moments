@@ -158,7 +158,7 @@ public class FriendService
         foreach (Friend item in friends)
         {
             await writer.WriteLineAsync(
-                $"{item.Name},{item.Avatar},{item.Info}," +
+                $"{item.Name},{item.Avatar},{item.Description}," +
                 $"{item.Email},{item.Link},{item.Feed}," +
                 $"{item.Rule},{item.Visible}"
             );
@@ -191,7 +191,7 @@ public class FriendService
             {
                 Name = name,
                 Avatar = avatar,
-                Info = info,
+                Description = info,
                 Email = email,
                 Link = link,
                 Feed = feed,

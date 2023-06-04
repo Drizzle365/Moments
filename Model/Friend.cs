@@ -16,7 +16,7 @@ public class Friend
 
     public string? Name { get; set; }
     public string? Avatar { get; set; }
-    public string? Info { get; set; }
+    public string? Description { get; set; }
     public string? Email { get; set; }
     public string? Link { get; set; }
     public string? Feed { get; set; }
