@@ -51,7 +51,14 @@
             Items="_friends"
             Width="@("100%")"
             ItemKey="r => r.FriendId.ToString()"
+            Search="@_search"
             Class="elevation-1">
+    <TopContent>
+        <MTextField @bind-Value="_search"
+                    Label="搜索"
+                    Class="mx-4">
+        </MTextField>
+    </TopContent>
     <ItemColContent>
         @if (context.Header.Value == "actions")
         {
@@ -327,6 +334,7 @@
     List<Friend> _friends = new();
     Friend _add = new();
     bool _addModal;
+    string? _search;
 
     protected override async Task OnInitializedAsync()
     {
