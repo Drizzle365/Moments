@@ -8,14 +8,11 @@ namespace Moments.Controllers;
 [ApiController]
 public class ApiController : ControllerBase
 {
-    private readonly IFreeSql _db;
     private readonly FriendService _friendService;
     private readonly ArticleService _articleService;
 
-
-    public ApiController(IFreeSql db, FriendService friendService, ArticleService articleService)
+    public ApiController(FriendService friendService, ArticleService articleService)
     {
-        _db = db;
         _friendService = friendService;
         _articleService = articleService;
     }
@@ -25,17 +22,9 @@ public class ApiController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("friends")]
-    public async Task<ActionResult<List<Friend>>> Friends()
+    public async Task<ActionResult<List<Friend>>> Friends(bool? isVis = null)
     {
-        var temp = await _friendService.ListAsync(true);
-        var random = new Random();
-        var friends = new List<Friend>();
-        foreach (var item in temp)
-        {
-            friends.Insert(random.Next(friends.Count), item);
-        }
-
-        return friends;
+        return await _friendService.ListAsync(isVis);
     }
 
     /// <summary>
@@ -46,5 +35,18 @@ public class ApiController : ControllerBase
     public async Task<ActionResult<object>> Articles(int? friendId = null, int page = 1, int size = 10)
     {
         return await _articleService.FriendWithArticle(friendId, page, size);
+    }
+
+    [HttpGet("articles/count")]
+    public async Task<ActionResult<long>> ArticleCount()
+    {
+        return await _articleService.CountAsync();
+    }
+
+    [HttpGet("friends/count")]
+    public async Task<ActionResult<long>> FriendCount()
+    {
+        return await _friendService
+            .CountAsync(true);
     }
 }

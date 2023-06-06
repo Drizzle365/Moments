@@ -1,6 +1,297 @@
 ﻿@page "/Admin/Interface"
-<h3>InterfaceManage</h3>
+@using Flurl.Http
+@using Moments.Model
+@using Newtonsoft.Json
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+<MCard Color="basil">
+<MTabs @bind-Value="_tab"
+       BackgroundColor="transparent"
+       Color="basil"
+       Grow>
+    <MTab Value="1">说明</MTab>
+    <MTab Value="2">文章</MTab>
+    <MTab Value="3">朋友</MTab>
+    <MTab Value="4">商店</MTab>
+</MTabs>
+<MTabsItems Value="@_tab">
+<MTabItem Value="1">
+    <MCard Class="mx-auto" Tile>
+        <MBorder Tag="span" Color="pink" Style="border-radius:0;height:50%;margin: auto 0;">
+            <MCardTitle>说明</MCardTitle>
+            <MCardSubtitle>接口集成的功能</MCardSubtitle>
+        </MBorder>
+        <MCardText>
+            <p>
+                该接口功能为开发者提供了订阅动态、朋友、统计等数据的功能，并提供了方便的HTML、CSS、JS模板，
+                可以轻松地将这些数据嵌入到自己的网页中。
+            </p>
+        </MCardText>
+    </MCard>
+    <MCard Class="mx-auto" Tile>
+        <MBorder Tag="span" Color="blue" Style="border-radius:0;height:50%;margin: auto 0;">
+            <MCardTitle>如何使用？</MCardTitle>
+            <MCardSubtitle>怎么将接口应用到自己博客中</MCardSubtitle>
+        </MBorder>
+        <MCardText>
+            <p>
+                每个接口我们都提供了相应的在线调试模块，可以在线调整参数，轻松查看接口返回的真实数据。<br>
+                如果您有一定的前端基础知识，只需要查看接口了解接口的规则即可自行编码完成数据的嵌入。<br>
+                如果您对基础的网页前端不了解，可以直接使用我们提供的嵌入代码，复制后即可在您博客的任意页面嵌入数据。
+            </p>
+        </MCardText>
+    </MCard>
+</MTabItem>
+<MTabItem Value="2">
+    <MCard Color="basil" Flat>
+        <MCardText>
+            <MBorder Tag="span" Color="pink" Style="border-radius:0;height:50%;margin: auto 0;">
+                <MCardTitle>获取文章列表</MCardTitle>
+                <MCardSubtitle>可以通过本接口获取文章的列表和详细信息。一般用户好友圈最近动态调用。</MCardSubtitle>
+            </MBorder>
+            <MRow>
+                <MCol Cols="8">
+                    <MSimpleTable Style="border:2px solid #8c959f" FixedHeader>
+                        <thead>
+                        <tr>
+                            <th class="text-left">
+                                参数
+                            </th>
+                            <th class="text-left">
+                                类型
+                            </th>
+                            <th class="text-left">
+                                默认
+                            </th>
+                            <th class="text-left">
+                                描述
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>friendid</td>
+                            <td>
+                                <code>int</code>
+                            </td>
+                            <td>null</td>
+                            <td>是否获取指定ID朋友的动态，为空表示获取全部订阅动态</td>
+                        </tr>
+                        <tr>
+                            <td>page</td>
+                            <td>
+                                <code>int</code>
+                            </td>
+                            <td>1</td>
+                            <td>页数</td>
+                        </tr>
+                        <tr>
+                            <td>size</td>
+                            <td>
+                                <code>int</code>
+                            </td>
+                            <td>10</td>
+                            <td>每页获取的数目</td>
+                        </tr>
+                        </tbody>
+                    </MSimpleTable>
+                    <MExpansionPanels Class="mt-5" Style="border: 2px solid #8c959f" Multiple>
+                        <MExpansionPanel>
+                            <MExpansionPanelHeader>
+                                请求结果
+                            </MExpansionPanelHeader>
+                            <MExpansionPanelContent Style="overflow-x: auto;max-height: 500px">
+                                <MSyntaxHighlight Code="@_articleRes" Language="json"></MSyntaxHighlight>
+                            </MExpansionPanelContent>
+                        </MExpansionPanel>
+                        <MExpansionPanel>
+                            <MExpansionPanelHeader>
+                                嵌入代码
+                                <PCopyableText Class="ml-1" Text="@_articleHtml"></PCopyableText>
+                            </MExpansionPanelHeader>
+                            <MExpansionPanelContent>
+                                <MButton Color="success" Style="float: right;margin: 3px" Outlined OnClick="() => Display(_articleHtml)">页面预览</MButton>
+                                <MSyntaxHighlight Id="article-code" Code="@_articleHtml" Language="html">
+                                </MSyntaxHighlight>
+                            </MExpansionPanelContent>
+                        </MExpansionPanel>
+                    </MExpansionPanels>
+                </MCol>
+                <MCol Cols="4">
+                    <MCard Class="mx-auto" Outlined>
+                        <MCardTitle>
+                            在线调试
+                        </MCardTitle>
+                        <MCardSubtitle>
+                            API : <code>@(NavigationManager.BaseUri)api/articles</code>
+                        </MCardSubtitle>
+                        <MCardText>
+                            <MTextField
+                                @bind-Value="_articleApiFriendId"
+                                Label="FriendId"
+                                Outlined
+                                Clearable>
+                            </MTextField>
+                            <MTextField
+                                @bind-Value="_articleApiPage"
+                                Label="Page"
+                                Outlined
+                                Clearable>
+                            </MTextField>
+                            <MTextField
+                                @bind-Value="_articleApiSize"
+                                Label="Size"
+                                Outlined
+                                Clearable>
+                            </MTextField>
+                        </MCardText>
+                        <MCardActions>
+                            <MButton Color="orange lighten-2" OnClick="RequestArticle" Outlined>发起请求</MButton>
+                        </MCardActions>
+                    </MCard>
+                </MCol>
+            </MRow>
+        </MCardText>
+    </MCard>
+</MTabItem>
+<MTabItem Value="3">
+    <MCard Color="basil" Flat>
+        <MCardText>
+            <MBorder Tag="span" Color="pink" Style="border-radius:0;height:50%;margin: auto 0;">
+                <MCardTitle>获取朋友列表</MCardTitle>
+                <MCardSubtitle>可以通过本接口获取朋友的列表和详细信息。一般可用于友情链接的调用。</MCardSubtitle>
+            </MBorder>
+            <MRow>
+                <MCol Cols="8">
+                    <MSimpleTable Style="border:2px solid #8c959f" FixedHeader>
+                        <thead>
+                        <tr>
+                            <th class="text-left">
+                                参数
+                            </th>
+                            <th class="text-left">
+                                类型
+                            </th>
+                            <th class="text-left">
+                                默认
+                            </th>
+                            <th class="text-left">
+                                描述
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>isVis</td>
+                            <td>
+                                <code>bool</code>
+                            </td>
+                            <td>null</td>
+                            <td>为空获取全部朋友，指定真值获取公开或者非公开朋友</td>
+                        </tr>
+                        </tbody>
+                    </MSimpleTable>
+                    <MExpansionPanels Class="mt-5" Style="border: 2px solid #8c959f" Multiple>
+                        <MExpansionPanel>
+                            <MExpansionPanelHeader>
+                                请求结果
+                            </MExpansionPanelHeader>
+                            <MExpansionPanelContent Style="overflow-x: auto;max-height: 500px">
+                                <MSyntaxHighlight Code="@_friendRes" Language="json"></MSyntaxHighlight>
+                            </MExpansionPanelContent>
+                        </MExpansionPanel>
+                        <MExpansionPanel>
+                            <MExpansionPanelHeader>
+                                嵌入代码
+                                <PCopyableText Class="ml-1" Text="@_friendHtml"></PCopyableText>
+                            </MExpansionPanelHeader>
+                            <MExpansionPanelContent>
+                                <MButton Color="success" Style="float: right;margin: 3px" Outlined OnClick="() => Display(_friendHtml)">页面预览</MButton>
+                                <MSyntaxHighlight Id="friend-code" Code="@_friendHtml" Language="html">
+                                </MSyntaxHighlight>
+                            </MExpansionPanelContent>
+                        </MExpansionPanel>
+                    </MExpansionPanels>
+                </MCol>
+                <MCol Cols="4">
+                    <MCard Class="mx-auto" Outlined>
+                        <MCardTitle>
+                            在线调试
+                        </MCardTitle>
+                        <MCardSubtitle>
+                            API : <code>@(NavigationManager.BaseUri)api/friends</code>
+                        </MCardSubtitle>
+                        <MCardText>
+                            <MCol Cols="6">
+                                <MSwitch @bind-Value="_friendApiVis"
+                                         Inset
+                                         Label="@string.Format("isVis: {0}", _friendApiVis)">
+                                </MSwitch>
+                            </MCol>
+                        </MCardText>
+                        <MCardActions>
+                            <MButton Color="orange lighten-2" OnClick="RequestFriend" Outlined>发起请求</MButton>
+                        </MCardActions>
+                    </MCard>
+                </MCol>
+            </MRow>
+        </MCardText>
+    </MCard>
+</MTabItem>
+<MTabItem Value="4">
+    <MCard Color="basil" Flat>
+        <MCardText>这里将建设前端主题商店，可以分享一些好用的模板</MCardText>
+    </MCard>
+</MTabItem>
+</MTabsItems>
+</MCard>
+
 
 @code {
-    
+    StringNumber? _tab;
+    int? _articleApiFriendId;
+    int _articleApiPage = 1;
+    int _articleApiSize = 10;
+    bool _friendApiVis = true;
+
+    string? _articleRes = "等待请求";
+    string? _articleHtml = "加载中";
+    string? _friendRes = "等待请求";
+    string? _friendHtml = "加载中";
+
+    protected override void OnInitialized()
+    {
+        _articleHtml = File.ReadAllText(Environment.CurrentDirectory + "/wwwroot/html/articles.html")
+            .Replace("{url}", NavigationManager.BaseUri);
+        _friendHtml = File.ReadAllText(Environment.CurrentDirectory + "/wwwroot/html/friends.html")
+            .Replace("{url}", NavigationManager.BaseUri);
+    }
+
+    async Task RequestArticle()
+    {
+        var html = await (NavigationManager.BaseUri + $"api/articles?friendid={_articleApiFriendId}&page={_articleApiPage}&size={_articleApiSize}")
+            .GetJsonAsync<List<Dictionary<string, string>>>();
+        var json = JsonConvert.SerializeObject(html, Formatting.Indented);
+
+        _articleRes = json;
+
+        AdminLayout.PushSnackbars(AlertTypes.Success, "请求成功！");
+    }
+
+    async Task RequestFriend()
+    {
+        var html = await (NavigationManager.BaseUri + $"api/friends?isVis={_friendApiVis}")
+            .GetJsonAsync<List<Friend>>();
+        var json = JsonConvert.SerializeObject(html, Formatting.Indented);
+        _friendRes = json;
+        AdminLayout.PushSnackbars(AlertTypes.Success, "请求成功！");
+    }
+
+    async Task Display(string code)
+    {
+        await JsRuntime.InvokeVoidAsync("runCode", code);
+    }
+
+
+
 }

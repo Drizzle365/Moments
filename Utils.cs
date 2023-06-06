@@ -2,7 +2,7 @@
 
 namespace Moments;
 
-public abstract class Utils
+public static class Utils
 {
     public static Dictionary<string, string?> ObjectToDictionary(object obj)
     {

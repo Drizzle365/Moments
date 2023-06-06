@@ -2,11 +2,12 @@ using Masa.Blazor;
 using Microsoft.AspNetCore.Components.Authorization;
 using Moments.Service;
 
-var dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "moments.db");
+var dbPath =(Environment.CurrentDirectory +"/moments.db");
 if (!File.Exists(dbPath))
 {
     File.Create(dbPath).Close();
 }
+
 
 IFreeSql SqlFactory(IServiceProvider r)
 {
@@ -19,13 +20,11 @@ IFreeSql SqlFactory(IServiceProvider r)
 }
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddControllers();
-builder.Services.AddMasaBlazor(options => {
-    options.ConfigureIcons(IconSet.FontAwesome);
-});
-
+builder.Services.AddMasaBlazor(options => { options.ConfigureIcons(IconSet.FontAwesome); });
 builder.Services.AddSingleton(SqlFactory);
 builder.Services.AddSingleton<ConfigService>();
 builder.Services.AddSingleton<GatherService>();
@@ -37,7 +36,10 @@ builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(option =>
     option.GetRequiredService<CustomAuthenticationStateProvider>());
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor()
+    .AddHubOptions(op =>
+            op.MaximumReceiveMessageSize = 100 * 1024 * 1024 //10M
+    );
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", corsPolicyBuilder =>

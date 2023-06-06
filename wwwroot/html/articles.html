@@ -1,0 +1,63 @@
+﻿<style>
+    #article-list-container {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    .article-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .article-list li {
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+
+    .article-list li a {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .article-list li a:hover {
+        text-decoration: underline;
+    }
+
+    .article-list li .pub-date {
+        font-size: 12px;
+        color: #777;
+    }
+</style>
+<div id="article-list-container">
+    <h1>最近动态</h1>
+    <ul id="articleList" class="article-list"></ul>
+</div>
+<script id="moments-js-">
+    const articleListElement = document.getElementById('articleList');
+    fetch('{url}api/articles')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(article => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+            <a href="${article.Link}" target="_blank">${article.Title}</a>
+            <p class="pub-date">${article.PubDate}</p>
+            <p>${article.Description}</p>
+          `;
+                articleListElement.appendChild(listItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+</script>

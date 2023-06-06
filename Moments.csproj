@@ -13,11 +13,17 @@
       <PackageReference Include="FreeSql" Version="3.2.687" />
       <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.2.687" />
       <PackageReference Include="Masa.Blazor" Version="1.0.0-rc.2" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include=".github\workflows\docker.yml" />
       <Content Include=".github\workflows\dotnet.yml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\export\friends_2023-06-04-22-41-27.csv" />
+      <_ContentIncludedByDefault Remove="wwwroot\export\friends_2023-06-04-22-44-14.csv" />
     </ItemGroup>
 
 </Project>

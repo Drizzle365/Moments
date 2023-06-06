@@ -5,7 +5,7 @@ namespace Moments.Service;
 public class StartService
 {
     private readonly IFreeSql _db;
-    private readonly string _dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "moments.db");
+    private readonly string _dbPath =(Environment.CurrentDirectory +"/moments.db");
     private readonly TimedTasksService _tasksService;
     private readonly ILogger<StartService> _logger;
 
@@ -18,7 +18,6 @@ public class StartService
         {
             Install();
         }
-
         Start();
     }
 

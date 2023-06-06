@@ -16,3 +16,11 @@ document.addEventListener('scroll', navScroll);
 function scrollToTop() {
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
+
+
+function runCode(htmlCode) {
+    var previewWindow = window.open();
+    previewWindow.document.write(htmlCode);
+    previewWindow.document.close();
+}
+
