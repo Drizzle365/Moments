@@ -5,6 +5,7 @@
 @inject ArticleService ArticleService
 @inject ConfigService ConfigService
 @inject FriendService FriendService
+@inject IConfiguration Configuration
 <div id="main">
     <div class="main-content">
         <div class="header">
@@ -71,16 +72,19 @@
         Title="快捷面板"
         Width="500"
         OnCancel="() => _info = false">
-    <MButton Depressed Link Href="/Apply" Target="_blank" Color="success">
-        申请加入
-    </MButton>
     <MButton Depressed Link Href="/Admin" Color="primary">
         进入后台
     </MButton>
-    <MButton Depressed Link Href="https://github.com/Drizzle365/Moments" Target="_blank" Color="primary">
-        <MIcon>mdi:mdi-github</MIcon>
+
+    <MDivider Height="10" Style="margin: 20px 0"></MDivider>
+    <span style="float: left">
+        <MIcon Style="margin-top: -4px;">mdi:mdi-clover</MIcon>
+        Version @Configuration["Version"]
+    </span>
+    <a style="float: right" href="https://github.com/Drizzle365/Moments" target="_blank">
+        <MIcon Style="margin-top: -4px;">mdi:mdi-github</MIcon>
         开源地址
-    </MButton>
+    </a>
 </PModal>
 <PModal @bind-Value="_friendInfo"
         Title="最近动态"
@@ -146,7 +150,7 @@
     async Task GetMore()
     {
         _p++;
-        var more = await ArticleService.ListAsync(page:_p);
+        var more = await ArticleService.ListAsync(page: _p);
         Console.WriteLine(more.Count);
         _nodeList.AddRange(more);
     }
