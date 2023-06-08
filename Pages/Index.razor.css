@@ -27,7 +27,7 @@ a {
 }
 
 .main-content {
-    max-width: 550px;
+    max-width: 600px;
     margin: 0 auto !important;
     position: relative;
     background-color: white;
@@ -43,7 +43,7 @@ a {
     position: fixed;
     height: 40px;
     width: 100%;
-    max-width: 550px;
+    max-width: 600px;
     background-color: rgba(0, 0, 0, 0.16);
     z-index: 100;
 }

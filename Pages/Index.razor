@@ -15,17 +15,17 @@
                 </span>
                 <span class="header-right" @onclick="() => _info = true">
                     <div style="color: white;margin-right: 10px">
-                        <span class="m-1">
+                        <span class="ma-1">
                             <i class="fas fa-user-friends"></i>朋友：@_friends.Count
                         </span>
-                        <span class="m-1">
+                        <span class="ma-1">
                             <i class="fas fa-palette"></i>
                             文章：@_countArticle
                         </span>
                     </div>
                 </span>
             </div>
-            <MImage src="@ConfigService.Get("Banner")" alt=""/>
+            <MImage src="@ConfigService.Get("Banner")" alt="" Class="rounded-b-lg"/>
             <div class="profile">
                 <div id="name">@ConfigService.Get("Name")</div>
                 <img src="@ConfigService.Get("Avatar")" alt="头像">
