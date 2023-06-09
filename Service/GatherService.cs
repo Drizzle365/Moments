@@ -199,6 +199,7 @@ public class GatherService
         {
             return new();
         }
+
         var xmlDoc = new XmlDocument();
         try
         {
@@ -223,11 +224,6 @@ public class GatherService
             { "description", description[0]?.InnerText },
             { "subtitle", subtitle[0]?.InnerText }
         };
-        Console.WriteLine(title[0]?.InnerText);
-        Console.WriteLine(link[0]?.InnerText);
-        Console.WriteLine(id[0]?.InnerText);
-        Console.WriteLine(description[0]?.InnerText);
-        Console.WriteLine(subtitle[0]?.InnerText);
         return dic;
     }
 }

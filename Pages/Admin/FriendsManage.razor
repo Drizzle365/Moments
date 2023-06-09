@@ -322,8 +322,11 @@
                         HideDetails="@("auto")"/>
         </MCol>
         <MCol>
-            <MButton OnClick="GetSiteInfo">
-                根据Feed获取信息
+            <MButton OnClick="GetSiteInfo" Class="ma-1">
+                Feed获取信息
+            </MButton>
+            <MButton OnClick="GetAvatar" Class="ma-1">
+                邮箱获取头像
             </MButton>
         </MCol>
 
@@ -343,11 +346,13 @@
 
     async Task Add()
     {
-        await Db.Insert<Friend>()
+        var id = await Db.Insert<Friend>()
             .AppendData(_add)
-            .ExecuteAffrowsAsync();
+            .ExecuteIdentityAsync();
+        _add.FriendId = int.Parse(id.ToString());
         _friends.Add(_add);
         _add = new Friend();
+        _addModal = false;
     }
 
     void GatherItem(Friend item)
@@ -375,8 +380,6 @@
     async Task Import(InputFileChangeEventArgs e)
     {
         var file = e.GetMultipleFiles().First();
-        Console.WriteLine(file.Size);
-
         await FriendService.Import(file.OpenReadStream());
         AdminLayout.PushSnackbars(AlertTypes.Info, "导入成功，请刷新查看！");
     }
@@ -407,5 +410,17 @@
             _add.Description = siteInfo["description"];
         }
     }
+
+
+    void GetAvatar()
+    {
+        if (_add.Email is null)
+        {
+            AdminLayout.PushSnackbars(AlertTypes.Error, "请先填写邮箱！");
+            return;
+        }
+        _add.Avatar = _add.Email.Contains("@qq.com") ? $"https://q1.qlogo.cn/g?b=qq&nk={_add.Email.Replace("@qq.com", "")}&s=100" : $"https://gravatar.loli.net/avatar/{Utils.Md5(_add.Email)}?s=100&r=g";
+    }
+
 
 }
