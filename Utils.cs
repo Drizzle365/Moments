@@ -22,7 +22,7 @@ public static class Utils
 
         return dictionary;
     }
-    
+
     public static string Md5(string str)
     {
         var inputBytes = Encoding.UTF8.GetBytes(str);
@@ -30,5 +30,13 @@ public static class Utils
         var outputBytes = md5.ComputeHash(inputBytes);
         var output = BitConverter.ToString(outputBytes).Replace("-", "").ToLower();
         return output;
+    }
+
+    public static string Substring(string? str, int n)
+    {
+        if (str is null)
+            return "";
+        if (str.Length <= n) return str;
+        return str.Substring(0, n) + "...";
     }
 }

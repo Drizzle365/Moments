@@ -58,6 +58,9 @@ public class StartService
         _db.Insert<Config>()
             .AppendData(new Config { Key = "Banner", Value = "/img/header.jpg" })
             .ExecuteAffrows();
+        _db.Insert<Config>()
+            .AppendData(new Config { Key = "Maximum", Value = "100" })
+            .ExecuteAffrows();
         _logger.LogInformation("初始化配置数据完成");
         _logger.LogInformation("数据库结构迁移完成");
     }

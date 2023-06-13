@@ -46,7 +46,7 @@
                             </div>
                             <div class="content">
                                 <b>@item.Title</b>
-                                @(new MarkupString(item.Description ?? "暂无阅览，请查看原文"))
+                                @(new MarkupString(Utils.Substring(item.Description, int.Parse(ConfigService.Get("Maximum"))) ?? "暂无阅览，请查看原文"))
                             </div>
                             <div>
                                 <div class="time">@item.PubDate.ToString("MM月dd日 tt hh:mm")</div>

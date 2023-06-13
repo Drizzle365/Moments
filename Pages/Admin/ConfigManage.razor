@@ -47,6 +47,14 @@
                 Clearable>
             </MTextField>
         </MExpansionPanelContent>
+        <MExpansionPanelContent>
+            <MTextField
+                @bind-Value="_maximum"
+                Outlined
+                Label="最大描述字符"
+                Clearable>
+            </MTextField>
+        </MExpansionPanelContent>
     </MExpansionPanel>
     <MExpansionPanel>
         <MExpansionPanelHeader>系统设置</MExpansionPanelHeader>
@@ -78,7 +86,7 @@
     string? _avatar;
     string? _sentence;
     string? _banner;
-
+    string? _maximum;
     protected override void OnInitialized()
     {
         _title = ConfigService.Get("Title");
@@ -88,6 +96,8 @@
         _avatar = ConfigService.Get("Avatar");
         _sentence = ConfigService.Get("Sentence");
         _banner = ConfigService.Get("Banner");
+        _maximum = ConfigService.Get("Maximum");
+
     }
 
     void Save()
@@ -99,6 +109,7 @@
         ConfigService.Set("Avatar", _avatar);
         ConfigService.Set("Sentence", _sentence);
         ConfigService.Set("Banner", _banner);
+        ConfigService.Set("Maximum", _maximum);
         AdminLayout.PushSnackbars(AlertTypes.Success, "保存成功");
     }
 
