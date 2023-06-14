@@ -1,6 +1,7 @@
 ﻿@page "/Apply"
 @using Moments.Service
 @using Moments.Model
+@using Type = Moments.Model.FriendType
 @inject FriendService FriendService
 <div style="margin: 25px;">
     <MRow >
@@ -100,7 +101,7 @@
             MainLayout.PushSnackbars(AlertTypes.Error, "请勿重复提交！");
             return;
         }
-        _item.Visible = false;
+        _item.FriendType = Type.隐藏;
         FriendService.Add(_item);
         MainLayout.PushSnackbars(AlertTypes.Success, "申请成功！");
     }

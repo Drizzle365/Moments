@@ -18,24 +18,24 @@ public class FriendService
     /// <summary>
     /// 获取朋友总数
     /// </summary>
-    /// <param name="isVis">筛选可见性</param>
+    /// <param name="friendType">朋友类型</param>
     /// <returns></returns>
-    public long Count(bool? isVis = null)
+    public long Count(FriendType? friendType = null)
     {
-        return isVis is not null
-            ? _db.Select<Friend>().Where(x => x.Visible == isVis).Count()
+        return friendType is not null
+            ? _db.Select<Friend>().Where(x => x.FriendType == friendType).Count()
             : _db.Select<Friend>().Count();
     }
 
     /// <summary>
     /// 异步获取朋友总数
     /// </summary>
-    /// <param name="isVis">筛选可见性</param>
+    /// <param name="friendType">朋友类型</param>
     /// <returns></returns>
-    public async Task<long> CountAsync(bool? isVis = null)
+    public async Task<long> CountAsync(FriendType? friendType = null)
     {
-        return isVis is not null
-            ? await _db.Select<Friend>().Where(x => x.Visible == isVis).CountAsync()
+        return friendType is not null
+            ? await _db.Select<Friend>().Where(x => x.FriendType == friendType).CountAsync()
             : await _db.Select<Friend>().CountAsync();
     }
 
@@ -53,24 +53,24 @@ public class FriendService
     /// <summary>
     /// 获取所有朋友
     /// </summary>
-    /// <param name="isVis">筛选可见性</param>
+    /// <param name="friendType">朋友类型</param>
     /// <returns></returns>
-    public List<Friend> List(bool? isVis = null)
+    public List<Friend> List(FriendType? friendType = null)
     {
-        return isVis is not null
-            ? _db.Select<Friend>().Where(x => x.Visible == isVis).ToList()
+        return friendType is not null
+            ? _db.Select<Friend>().Where(x => x.FriendType == friendType).ToList()
             : _db.Select<Friend>().ToList();
     }
 
     /// <summary>
     /// 异步获取所有朋友
     /// </summary>
-    /// <param name="isVis">筛选可见性</param>
+    /// <param name="friendType">朋友类型</param>
     /// <returns></returns>
-    public async Task<List<Friend>> ListAsync(bool? isVis = null)
+    public async Task<List<Friend>> ListAsync(FriendType? friendType = null)
     {
-        return isVis is not null
-            ? await _db.Select<Friend>().Where(x => x.Visible == isVis).ToListAsync()
+        return friendType is not null
+            ? await _db.Select<Friend>().Where(x => x.FriendType == friendType).ToListAsync()
             : await _db.Select<Friend>().ToListAsync();
     }
 
@@ -127,18 +127,7 @@ public class FriendService
     }
 
 
-    /// <summary>
-    /// 设置朋友的可见性
-    /// </summary>
-    /// <param name="friendId">朋友编号</param>
-    /// <param name="vis">可见性</param>
-    /// <returns></returns>
-    public async Task<bool> SetVis(int friendId, bool vis)
-    {
-        var row = await _db.Update<Friend>().Where(x => x.FriendId == friendId).Set(x => x.Visible, vis)
-            .ExecuteAffrowsAsync();
-        return row > 0;
-    }
+    
 
     /// <summary>
     /// 导出数据
@@ -160,7 +149,7 @@ public class FriendService
             await writer.WriteLineAsync(
                 $"{item.Name},{item.Avatar},{item.Description}," +
                 $"{item.Email},{item.Link},{item.Feed}," +
-                $"{item.Rule},{item.Visible}"
+                $"{item.Rule},{item.FriendType}"
             );
         }
 
@@ -178,6 +167,7 @@ public class FriendService
         using StreamReader reader = new StreamReader(file);
         while (await reader.ReadLineAsync() is { } line)
         {
+            Console.Write(line);
             string[] data = line.Split(',');
             string name = data[0];
             string? avatar = data[1].Length == 0 ? null : data[1];
@@ -186,7 +176,7 @@ public class FriendService
             string link = data[4];
             string feed = data[5];
             Rule rule = (Rule)Enum.Parse(typeof(Rule), data[6]);
-            bool visible = bool.Parse(data[7]);
+            FriendType friendType = (FriendType)Enum.Parse(typeof(FriendType), data[7]);
             Friend friend = new Friend
             {
                 Name = name,
@@ -196,7 +186,7 @@ public class FriendService
                 Link = link,
                 Feed = feed,
                 Rule = rule,
-                Visible = visible
+                FriendType = friendType
             };
             friends.Add(friend);
         }

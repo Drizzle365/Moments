@@ -52,7 +52,7 @@ public class GatherService
     /// </summary>
     public void GatherRssAll()
     {
-        var friends = _db.Select<Friend>().Where(x => x.Visible == true).ToList();
+        var friends = _db.Select<Friend>().ToList();
         foreach (var item in friends)
         {
             GatherRssItem(item);

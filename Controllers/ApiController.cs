@@ -22,9 +22,9 @@ public class ApiController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("friends")]
-    public async Task<ActionResult<List<Friend>>> Friends(bool? isVis = null)
+    public async Task<ActionResult<List<Friend>>> Friends(FriendType? friendType = null)
     {
-        return await _friendService.ListAsync(isVis);
+        return await _friendService.ListAsync(friendType);
     }
 
     /// <summary>
@@ -47,6 +47,6 @@ public class ApiController : ControllerBase
     public async Task<ActionResult<long>> FriendCount()
     {
         return await _friendService
-            .CountAsync(true);
+            .CountAsync();
     }
 }

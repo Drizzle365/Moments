@@ -9,6 +9,13 @@ public enum Rule
     Other
 }
 
+public enum FriendType
+{
+    隐藏,
+    友邻,
+    关注
+}
+
 public class Friend
 {
     [Column(IsIdentity = true, IsPrimary = true)]
@@ -21,5 +28,5 @@ public class Friend
     public string? Link { get; set; }
     public string? Feed { get; set; }
     public Rule Rule { get; set; } = Rule.Rss;
-    public bool Visible { get; set; } = true;
+    public FriendType FriendType { get; set; } = FriendType.友邻;
 }

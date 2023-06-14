@@ -150,24 +150,15 @@
                     <MCol Cols="12"
                           Sm="12"
                           Md="12">
-                        @if (_editedItem.Visible)
-                        {
-                            <MChip Class="ma-2" Style="cursor: pointer"
-                                   TextColor="white"
-                                   OnClick="async Task() => { await SwitchVis(_editedItem); }"
-                                   Color="green">
-                                可见
-                            </MChip>
-                        }
-                        else
-                        {
-                            <MChip Class="ma-2" Style="cursor: pointer"
-                                   Color="red"
-                                   OnClick="async Task() => { await SwitchVis(_editedItem); }"
-                                   TextColor="white">
-                                隐藏
-                            </MChip>
-                        }
+                        <MSelect Items="Enum.GetNames(typeof(FriendType))"
+                                 @bind-Value="@_editedItem.FriendType"
+                                 ItemText="u => u"
+                                 ItemValue="u => (FriendType)Enum.Parse(typeof(FriendType), u)"
+                                 Label="类别"
+                                 Dense
+                                 Filled
+                                 HideDetails="@("auto")">
+                        </MSelect>
                     </MCol>
                 </MRow>
             </MContainer>
@@ -204,7 +195,7 @@
     private readonly List<DataTableHeader<Friend>> _headers = new()
     {
         new() { Text = "昵称", Value = nameof(Friend.Name) },
-        new() { Text = "可见性", Value = nameof(Friend.Visible) },
+        new() { Text = "类别", Value = nameof(Friend.FriendType) },
         new() { Text = "链接", Value = nameof(Friend.Link) },
         new() { Text = "Feed", Value = nameof(Friend.Feed) },
         new() { Text = "操作", Value = "actions", Sortable = false, Width = "100px", Align = DataTableHeaderAlign.Center, }
@@ -359,13 +350,6 @@
         AdminLayout.PushSnackbars(AlertTypes.Info, item.Name + ": 采集成功！");
     }
 
-
-    async Task SwitchVis(Friend item)
-    {
-        await FriendService.SetVis(item.FriendId, !item.Visible);
-        item.Visible = !item.Visible;
-        AdminLayout.PushSnackbars(AlertTypes.Info, "状态变更成功！");
-    }
 
     async Task Export()
     {

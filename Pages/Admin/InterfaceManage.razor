@@ -182,12 +182,12 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td>isVis</td>
+                            <td>friendType</td>
                             <td>
-                                <code>bool</code>
+                                <code>string</code>
                             </td>
                             <td>null</td>
-                            <td>为空获取全部朋友，指定真值获取公开或者非公开朋友</td>
+                            <td>可以为隐藏，友邻，关注，默认为null获取全部</td>
                         </tr>
                         </tbody>
                     </MSimpleTable>
@@ -222,12 +222,15 @@
                             API : <code>@(NavigationManager.BaseUri)api/friends</code>
                         </MCardSubtitle>
                         <MCardText>
-                            <MCol Cols="6">
-                                <MSwitch @bind-Value="_friendApiVis"
-                                         Inset
-                                         Label="@string.Format("isVis: {0}", _friendApiVis)">
-                                </MSwitch>
-                            </MCol>
+                            <MSelect Items="Enum.GetNames(typeof(FriendType))"
+                                     @bind-Value="@_friendApiType"
+                                     ItemText="u => u"
+                                     ItemValue="u => (FriendType)Enum.Parse(typeof(FriendType), u)"
+                                     Label="类别"
+                                     Outlined
+                                     Clearable
+                                     HideDetails="@("auto")">
+                            </MSelect>
                         </MCardText>
                         <MCardActions>
                             <MButton Color="orange lighten-2" OnClick="RequestFriend" Outlined>发起请求</MButton>
@@ -252,8 +255,7 @@
     int? _articleApiFriendId;
     int _articleApiPage = 1;
     int _articleApiSize = 10;
-    bool _friendApiVis = true;
-
+    FriendType? _friendApiType;
     string? _articleRes = "等待请求";
     string? _articleHtml = "加载中";
     string? _friendRes = "等待请求";
@@ -280,7 +282,7 @@
 
     async Task RequestFriend()
     {
-        var html = await (NavigationManager.BaseUri + $"api/friends?isVis={_friendApiVis}")
+        var html = await (NavigationManager.BaseUri + $"api/friends?friendType={_friendApiType}")
             .GetJsonAsync<List<Friend>>();
         var json = JsonConvert.SerializeObject(html, Formatting.Indented);
         _friendRes = json;
