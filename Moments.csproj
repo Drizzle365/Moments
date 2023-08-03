@@ -26,4 +26,8 @@
       <_ContentIncludedByDefault Remove="wwwroot\export\friends_2023-06-04-22-44-14.csv" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\export\" />
+    </ItemGroup>
+
 </Project>

@@ -57,7 +57,7 @@ drizzle2001/moments
 运行后访问 `http://IP:3000` 即可  
 建议使用反向代理绑定域名访问
 
-图文教程（临时）: https://dearain.cn/archives/2069/   
+图文教程（临时）: https://shiyu.dev/archives/2069/   
 完善的文档中心正在构建中
 
 ## 其他相关
