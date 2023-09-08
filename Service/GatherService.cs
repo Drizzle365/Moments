@@ -86,11 +86,11 @@ public class GatherService
         try
         {
             var html = await url.GetStringAsync();
-            xmlDoc.LoadXml(html);
+            xmlDoc.LoadXml(html.TrimStart());
         }
         catch (Exception)
         {
-            _logger.LogWarning("站点采集失败：" + url);
+            _logger.LogWarning(message: "站点采集失败：" + url);
         }
 
         var xmlNamespaceManager =

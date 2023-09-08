@@ -76,7 +76,7 @@
                         </MToolbarItems>
                     </MToolbar>
                 <MCardText Class="markdown-body p-4" Style="height: 800px;padding-top: 20px">
-                    @(new MarkupString(_now.Content ?? _now.Description))
+                    @(new MarkupString((_now.Content ?? _now.Description) ?? string.Empty))
                 </MCardText >
             </MCard>
         </ChildContent>

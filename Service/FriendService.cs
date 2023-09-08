@@ -167,7 +167,6 @@ public class FriendService
         using StreamReader reader = new StreamReader(file);
         while (await reader.ReadLineAsync() is { } line)
         {
-            Console.Write(line);
             string[] data = line.Split(',');
             string name = data[0];
             string? avatar = data[1].Length == 0 ? null : data[1];
